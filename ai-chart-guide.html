@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャートの使い方ガイド。チャート機能、AI分析、未来予測など全機能を初心者向けに詳しく解説。"/>
+  <title>AI×チャート ガイド｜使い方・全機能解説</title>
+  <meta property="og:title" content="AI×チャート ガイド｜使い方・全機能解説"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* ═══════════════════════════════════════════
+   RESET & FOUNDATIONS
+═══════════════════════════════════════════ */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth;font-size:16px}
+body{
+  background:#080806;
+  color:#e8e0cc;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%;border-radius:8px}
+button{font-family:inherit;cursor:none}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+.cursor-dot{
+  position:fixed;width:6px;height:6px;
+  background:#c9a84c;border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+  mix-blend-mode:difference;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(201,168,76,.45);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .35s cubic-bezier(.23,1,.32,1),
+             height .35s cubic-bezier(.23,1,.32,1),
+             opacity .35s,border-color .35s;
+}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}button{cursor:pointer}}
+
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root{
+  --ink:    #080806;
+  --ink1:   #0f0e0a;
+  --ink2:   #161410;
+  --amber:  #c9a84c;
+  --amber2: #e8cc80;
+  --amber3: #f5e4a8;
+  --smoke:  rgba(232,224,204,.55);
+  --fog:    rgba(232,224,204,.28);
+  --ghost:  rgba(232,224,204,.10);
+  --r:12px;
+  --gap:clamp(16px,3vw,32px);
+}
+
+/* ═══════════════════════════════════════════
+   NOISE GRAIN OVERLAY
+═══════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.mono {font-family:'JetBrains Mono',monospace}
+
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;letter-spacing:.01em;line-height:1.15}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:1000px;margin:0 auto;padding:0 var(--gap);position:relative;z-index:2}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  border-bottom:1px solid rgba(201,168,76,.14);
+  background:linear-gradient(180deg,rgba(8,8,6,.95) 0%,rgba(8,8,6,.85) 100%);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+
+.header-content{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 0;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-decoration:none;
+  transition:color .3s;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.logo:hover{color:var(--amber2)}
+
+.header-links{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+.header-links a{
+  font-size:13px;
+  letter-spacing:.02em;
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+}
+
+.header-links a:hover{color:var(--amber)}
+
+@media(max-width:640px){
+  .header-links{gap:12px;font-size:12px}
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TITLE SECTION
+═══════════════════════════════════════════ */
+.page-title-section{
+  padding:60px 0 48px 0;
+  text-align:center;
+  animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.page-title-section h1{
+  font-size:clamp(36px,8vw,60px);
+  margin-bottom:16px;
+  color:var(--amber2);
+  letter-spacing:.02em;
+}
+
+.page-title-section p{
+  font-size:16px;
+  color:var(--fog);
+  letter-spacing:.01em;
+}
+
+/* ═══════════════════════════════════════════
+   TABLE OF CONTENTS
+═══════════════════════════════════════════ */
+.toc-box{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;
+  padding:32px;
+  margin:60px 0;
+  animation:slideIn .8s ease;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.toc-title{
+  font-size:18px;
+  color:var(--amber);
+  letter-spacing:.04em;
+  margin-bottom:24px;
+  font-weight:500;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.toc-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.toc-item{
+  padding:12px 0;
+  border-bottom:1px solid rgba(201,168,76,.1);
+}
+
+.toc-item:last-child{
+  border-bottom:none;
+}
+
+.toc-item a{
+  font-size:14px;
+  color:var(--smoke);
+  transition:color .3s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.toc-item a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:768px){
+  .toc-grid{grid-template-columns:1fr}
+  .toc-box{padding:24px}
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT SECTIONS
+═══════════════════════════════════════════ */
+.content-wrapper{
+  padding:40px 0;
+}
+
+.guide-section{
+  margin-bottom:80px;
+  animation:slideIn .8s ease backwards;
+  border-left:3px solid rgba(201,168,76,.3);
+  padding-left:32px;
+}
+
+.guide-section:nth-child(1){animation-delay:.1s}
+.guide-section:nth-child(2){animation-delay:.2s}
+.guide-section:nth-child(3){animation-delay:.3s}
+.guide-section:nth-child(4){animation-delay:.4s}
+.guide-section:nth-child(5){animation-delay:.5s}
+.guide-section:nth-child(6){animation-delay:.6s}
+
+.section-header{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.section-icon{
+  font-size:48px;
+  line-height:1;
+  flex-shrink:0;
+}
+
+.section-title-block h2{
+  font-size:32px;
+  color:var(--amber2);
+  margin-bottom:8px;
+  letter-spacing:.02em;
+}
+
+.section-title-block .subtitle{
+  font-size:14px;
+  color:var(--fog);
+  letter-spacing:.02em;
+}
+
+.section-content{
+  line-height:2;
+  font-size:15px;
+  color:var(--smoke);
+  margin-bottom:24px;
+}
+
+.section-content p{
+  margin-bottom:20px;
+}
+
+.section-content ul{
+  margin:20px 0 20px 24px;
+  list-style:disc;
+}
+
+.section-content li{
+  margin-bottom:14px;
+  line-height:1.8;
+}
+
+.feature-card{
+  background:rgba(201,168,76,.06);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:12px;
+  padding:28px;
+  margin:28px 0;
+}
+
+.feature-card h3{
+  font-size:20px;
+  color:var(--amber2);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.feature-card p{
+  color:var(--smoke);
+  line-height:1.9;
+  margin-bottom:16px;
+}
+
+.feature-list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin:24px 0;
+}
+
+.feature-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.feature-check{
+  color:var(--amber);
+  font-weight:bold;
+  flex-shrink:0;
+  margin-top:2px;
+}
+
+.feature-item-text{
+  color:var(--smoke);
+  font-size:14px;
+  line-height:1.7;
+}
+
+@media(max-width:768px){
+  .feature-list{grid-template-columns:1fr}
+  .guide-section{padding-left:24px}
+  .section-header{flex-direction:column}
+  .section-icon{font-size:40px}
+}
+
+/* ═══════════════════════════════════════════
+   TIPS & NOTES
+═══════════════════════════════════════════ */
+.tip-box{
+  background:rgba(76,187,138,.08);
+  border-left:3px solid rgba(76,187,138,.4);
+  padding:20px;
+  border-radius:4px;
+  margin:28px 0;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--smoke);
+}
+
+.important-box{
+  background:rgba(224,92,92,.08);
+  border-left:3px solid rgba(224,92,92,.4);
+  padding:20px;
+  border-radius:4px;
+  margin:28px 0;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--smoke);
+}
+
+.note-box{
+  background:rgba(201,168,76,.06);
+  border-left:3px solid rgba(201,168,76,.3);
+  padding:20px;
+  border-radius:4px;
+  margin:28px 0;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--smoke);
+}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.button-group{
+  display:flex;
+  gap:16px;
+  margin-top:48px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  display:inline-block;
+  padding:14px 32px;
+  border:1px solid rgba(201,168,76,.4);
+  border-radius:8px;
+  background:transparent;
+  color:#e8e0cc;
+  font-size:14px;
+  letter-spacing:.02em;
+  transition:all .3s;
+  text-decoration:none;
+  font-family:'Noto Sans JP',sans-serif;
+  cursor:pointer;
+}
+
+.btn:hover{
+  border-color:var(--amber);
+  background:rgba(201,168,76,.1);
+}
+
+.btn-primary{
+  background:var(--amber);
+  color:#080806;
+  border-color:var(--amber);
+  font-weight:500;
+}
+
+.btn-primary:hover{
+  background:var(--amber2);
+  border-color:var(--amber2);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid rgba(201,168,76,.14);
+  padding:48px 0 24px 0;
+  background:rgba(8,8,6,.5);
+  margin-top:100px;
+}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:24px;
+  font-size:12px;
+  color:var(--fog);
+}
+
+.foot-brand{
+  font-size:16px;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--amber);
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+.foot-links{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.foot-links a{
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.foot-links a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:768px){
+  .foot{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:640px){
+  .page-title-section{padding:40px 0 32px 0}
+  .section-title-block h2{font-size:24px}
+  .button-group{flex-direction:column}
+  .btn{width:100%;text-align:center}
+}
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="index-5.html" class="logo serif">AI × チャート</a>
+      <nav class="header-links">
+        <a href="index-5.html#features">Features</a>
+        <a href="index-5.html#pricing">Pricing</a>
+        <a href="ai-chart-guide.html">Guide</a>
+        <a href="chat.html">Support</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+  <div class="wrap">
+    <h1>AI×チャート ガイド</h1>
+    <p>初心者から上級者まで、全機能を詳しく解説</p>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="wrap">
+  <nav class="toc-box">
+    <div class="toc-title">📚 このガイドの目次</div>
+    <div class="toc-grid">
+      <div class="toc-item"><a href="#s1">📈 チャート機能</a></div>
+      <div class="toc-item"><a href="#s2">🤖 AI分析</a></div>
+      <div class="toc-item"><a href="#s3">🔮 未来予測ゾーン</a></div>
+      <div class="toc-item"><a href="#s4">📊 モンテカルロ</a></div>
+      <div class="toc-item"><a href="#s5">🔥 セクター資金分析</a></div>
+      <div class="toc-item"><a href="#s6">🏆 ランキング機能</a></div>
+      <div class="toc-item"><a href="#s7">🔍 類似チャート検索</a></div>
+      <div class="toc-item"><a href="#s8">⚡ AI検出機能</a></div>
+      <div class="toc-item"><a href="#s9">📉 日経比較</a></div>
+      <div class="toc-item"><a href="#s10">🔀 個別銘柄比較</a></div>
+    </div>
+  </nav>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div class="wrap">
+
+    <!-- イントロダクション -->
+    <div class="guide-section">
+      <div class="section-content">
+        <p><strong>AI×チャート</strong は、日本株の膨大な時系列データ（40年以上）をAIが分析し、「過去のチャート」だけでなく「未来の可能性」まで可視化する、次世代の株価分析ツールです。</p>
+        <p>従来のチャートツールとは違い、複雑な分析をAIが自動で行います。感覚的な判断ではなく、**根拠ある投資判断**をサポートします。</p>
+      </div>
+      <div class="note-box">
+        <strong>💡 このツールについて：</strong> AI×チャートは、投資判断をサポートするツールです。最終的な判断は、ユーザー自身の責任で行ってください。過去のパフォーマンスは、将来の成果を保証しません。
+      </div>
+    </div>
+
+    <!-- ① チャート機能 -->
+    <div class="guide-section" id="s1">
+      <div class="section-header">
+        <div class="section-icon">📈</div>
+        <div class="section-title-block">
+          <h2>① 高性能チャート機能</h2>
+          <div class="subtitle">プロ級の分析ツール × スマホ対応</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>AI×チャートの基本となるチャート機能です。</strong> 複雑なテクニカル分析を、初心者でも直感的に操作できるように設計されています。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎨 表示形式の切り替え</h3>
+        <p>チャートの表示方法を、用途に応じて自由に変更できます：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>ローソク足</strong>：始値・高値・安値・終値を一目で確認。プロトレーダー向け。</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>折れ線チャート</strong>：シンプルで分かりやすい。初心者向け。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- チャート機能の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/01-chart-basic.png" alt="チャート機能 基本表示" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 チャート機能の基本表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 移動平均線（MA）</h3>
+        <p>過去の株価の平均値を線で表示します。トレンドを見つけるのに最適です：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>MA1〜MA4</strong>：4本の移動平均線を同時表示。短期・中期・長期のトレンドが見える。</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>ゴールデンクロス</strong>：短期MAが長期MAを上回ると、上昇トレンド開始の可能性。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 移動平均線の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/02-moving-average.png" alt="移動平均線の表示例" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 移動平均線（MA1〜MA4）の表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🔧 テクニカルインジケーター</h3>
+        <p>プロのトレーダーが使う分析ツールを搭載：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>MACD</strong>：速度が速い移動平均線と遅い移動平均線の差を表示。売買タイミングの判断に。</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>RSI</strong>：買われすぎ・売られすぎを判定。0〜100で表示、70以上で警戒、30以下でチャンス。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 出来高バー</h3>
+        <p>その日に何株取引されたかを表示します：</p>
+        <p>出来高が多い日は、市場の注目度が高い日。大口の資金が動いている可能性があります。</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 初心者向けTips：</strong> まずはローソク足 + 移動平均線（MA1, MA2）だけで十分です。複雑さに慣れてから、MACDやRSIを追加しましょう。
+      </div>
+    </div>
+
+    <!-- ② AI分析 -->
+    <div class="guide-section" id="s2">
+      <div class="section-header">
+        <div class="section-icon">🤖</div>
+        <div class="section-title-block">
+          <h2>② AI分析機能</h2>
+          <div class="subtitle">AIが自動で判断、数字で表示</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>AI×チャートの核となる機能です。</strong> 膨大なデータをAIが分析し、感覚ではなく確率で判断をサポートします。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 上昇確率 / 下落リスク</h3>
+        <p>AIが過去のチャートパターンと現在の株価を比較し、今後の株価が上がる確率を数字で表示します：</p>
+        <ul>
+          <li><strong>上昇確率 70% 以上：</strong> AIが「この形は上昇する傾向が強い」と判定</li>
+          <li><strong>下落リスク 30% 以上：</strong> AIが「これから下げる可能性がある」と警告</li>
+        </ul>
+        <p>これらの確率は、40年分のデータから学習した結果です。「なんとなく」ではなく、統計的根拠があります。</p>
+      </div>
+
+      <!-- AI分析の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/03-ai-analysis.png" alt="AI分析の結果表示" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 AI分析：上昇確率・下落リスク表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 トレンド強弱の判定</h3>
+        <p>現在のトレンドが「強いのか」「弱いのか」を判定：</p>
+        <ul>
+          <li><strong>強気トレンド：</strong> 上昇が続く可能性が高い → 買い目線</li>
+          <li><strong>弱気トレンド：</strong> 下落が続く可能性が高い → 売り目線</li>
+          <li><strong>中立：</strong> 方向が定まらない → 様子見推奨</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎯 相場状態の分類</h3>
+        <p>AIが現在の相場を、以下のいずれかに分類します：</p>
+        <ul>
+          <li><strong>上昇相場：</strong> 堅調な買いが続いている</li>
+          <li><strong>下落相場：</strong> 売り圧力が強い</li>
+          <li><strong>レンジ相場：</strong> 上下の値動きが小さく、一定の範囲で推移</li>
+          <li><strong>ボラティリティ期：</strong> 急騰・暴落など、予測不可能な変動</li>
+        </ul>
+      </div>
+
+      <div class="note-box">
+        <strong>📌 重要な注意：</strong> AI分析は確率であり、100% 的中するわけではありません。参考情報として活用し、必ず自分自身で判断してください。
+      </div>
+    </div>
+
+    <!-- ③ 未来予測ゾーン -->
+    <div class="guide-section" id="s3">
+      <div class="section-header">
+        <div class="section-icon">🔮</div>
+        <div class="section-title-block">
+          <h2>③ 未来予測ゾーン</h2>
+          <div class="subtitle">チャート右側に「あり得る未来」を可視化</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>これは AI×チャート最大の特徴です。</strong> チャートの右側に、AIが推定した将来の株価レンジを表示します。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 3本のラインで将来を表示</h3>
+        <ul>
+          <li><strong>上限ライン（オレンジ）：</strong> 株価が上昇する可能性がある上限</li>
+          <li><strong>中央ライン（ゴールド）：</strong> 最も可能性が高い価格帯</li>
+          <li><strong>下限ライン（赤）：</strong> 下落する可能性がある下限</li>
+        </ul>
+        <p>この3本の線で囲まれたゾーンが、「あり得る未来」のレンジです。</p>
+      </div>
+
+      <!-- 未来予測ゾーンの画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/04-future-prediction.png" alt="未来予測ゾーンの表示" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 未来予測ゾーン：チャート右側に将来の可能性を表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>⚙️ ボラティリティの反映</h3>
+        <p>ボラティリティ（値動きの激しさ）に応じて、予測ゾーンの幅が変わります：</p>
+        <ul>
+          <li><strong>ボラティリティが高い：</strong> ゾーンが広い → 値動きが大きくなる可能性</li>
+          <li><strong>ボラティリティが低い：</strong> ゾーンが狭い → 値動きが小さくなる可能性</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 使い方のコツ：</strong> 未来予測ゾーンは、「確実な値」ではなく「可能性のレンジ」です。投資目標の設定や、損切り価格の決定に役立てましょう。
+      </div>
+    </div>
+
+    <!-- ④ モンテカルロ予測 -->
+    <div class="guide-section" id="s4">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div class="section-title-block">
+          <h2>④ モンテカルロ予測シミュレーション</h2>
+          <div class="subtitle">数千パターンのシミュレーションで確率を算出</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>モンテカルロ法とは、統計学の手法です。</strong> コンピュータが何千・何万というシミュレーションを行い、最も可能性の高い将来を計算します。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎲 シミュレーションの仕組み</h3>
+        <p>AIが過去の株価変動パターンを学習し、現在の状況から以下を計算：</p>
+        <ul>
+          <li>明日：7,000パターンのシミュレーション</li>
+          <li>1週間後：5,000パターンのシミュレーション</li>
+          <li>1ヶ月後：3,000パターンのシミュレーション</li>
+        </ul>
+        <p>これらの結果から、「上昇する確率は70%、下落する確率は30%」という確率を導き出します。</p>
+      </div>
+
+      <!-- モンテカルロ予測の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/05-monte-carlo.png" alt="モンテカルロ予測のシミュレーション結果" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 モンテカルロ予測：複数パターンのシミュレーション結果</p>
+      </div>
+
+      <div class="note-box">
+        <strong>📌 重要：</strong> 過去のパターンに基づくため、市場に大きな変化（経済危機など）があると、シミュレーション精度は低下します。
+      </div>
+    </div>
+
+    <!-- ⑤ セクター資金分析 -->
+    <div class="guide-section" id="s5">
+      <div class="section-header">
+        <div class="section-icon">🔥</div>
+        <div class="section-title-block">
+          <h2>⑤ セクター資金分析</h2>
+          <div class="subtitle">業種全体の資金の流れを可視化</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>日本の株式市場は、33の業種（セクター）に分かれています。</strong> このツールは、各業種への資金の流れをリアルタイムで表示します。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🌡️ ヒートマップ表示</h3>
+        <p>色分けで資金の流れを一目で把握：</p>
+        <ul>
+          <li><strong>赤（ホット）：</strong> 資金が集中している業種 → 上昇トレンド</li>
+          <li><strong>青（コールド）：</strong> 資金が流出している業種 → 下落トレンド</li>
+          <li><strong>灰色（ニュートラル）：</strong> 買い売りが均衡</li>
+        </ul>
+      </div>
+
+      <!-- セクター分析の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/06-sector-heatmap.png" alt="セクター資金分析のヒートマップ" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 セクター分析：33業種のヒートマップ表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>💰 資金流入 / 流出の追跡</h3>
+        <p>大口の投資家がどの業種に投資しているか分析：</p>
+        <ul>
+          <li>例：銀行・証券業が赤い → 景気好転を予想する大口が買っている</li>
+          <li>例：IT・通信業が青い → テック企業を避ける動きか</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 活用法：</strong> 個別銘柄を選ぶときは、その企業が属する業種の動きも確認しましょう。業種全体が上昇トレンドなら、その中の銘柄は比較的買いやすいです。
+      </div>
+    </div>
+
+    <!-- ⑥ ランキング機能 -->
+    <div class="guide-section" id="s6">
+      <div class="section-header">
+        <div class="section-icon">🏆</div>
+        <div class="section-title-block">
+          <h2>⑥ ランキング機能</h2>
+          <div class="subtitle">最も強い銘柄を即座に発見</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>6000銘柄すべてを自動分析し、複数のランキングで表示します。</strong> これにより、投資機会を見落としません。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 複数のランキング視点</h3>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>上昇率ランキング：</strong> 過去1日、1週間、1ヶ月で最も上昇した銘柄</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>出来高ランキング：</strong> 最も取引が多い銘柄 → 大口が動いている</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>資金流入ランキング：</strong> 最も買い圧力が強い銘柄</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>AI評価ランキング：</strong> AIが「買い」と判定した上位銘柄</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ランキング機能の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/07-ranking.png" alt="ランキング機能の表示" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 ランキング機能：複数の視点で銘柄を発掘</p>
+      </div>
+
+      <div class="important-box">
+        <strong>⚠️ 注意：</strong> ランキング上位だからといって、必ず上昇するわけではありません。ランキングはあくまで参考です。各銘柄の詳細をチェックしましょう。
+      </div>
+    </div>
+
+    <!-- ⑦ 類似チャート検索 -->
+    <div class="guide-section" id="s7">
+      <div class="section-header">
+        <div class="section-icon">🔍</div>
+        <div class="section-title-block">
+          <h2>⑦ 類似チャート検索</h2>
+          <div class="subtitle">過去の同じ形を探して、その後を予想</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>「同じ形のチャートの後は、同じように値動きする」という仮説に基づいています。</strong> AIが自動で過去の似たチャート形を検出し、その後の値動きを参考として表示します。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🔎 検索の仕組み</h3>
+        <ul>
+          <li><strong>ステップ1：</strong> AIが現在のチャート形を分析</li>
+          <li><strong>ステップ2：</strong> 過去40年のデータから「似た形」を検索</li>
+          <li><strong>ステップ3：</strong> マッチした形の「その後の値動き」を表示</li>
+          <li><strong>ステップ4：</strong> 複数の類似例があれば、確率で判定</li>
+        </ul>
+      </div>
+
+      <!-- 類似チャート検索の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/08-similar-chart.png" alt="類似チャート検索の結果" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 類似チャート検索：過去の似た形を自動検出</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 活用例</h3>
+        <p>例えば、現在のチャートが「ダブルボトム」という形だったとします：</p>
+        <ul>
+          <li>過去40年で同じ「ダブルボトム」は100回発生</li>
+          <li>そのうち、70回は上昇、30回は下落</li>
+          <li>→ このパターン後の上昇確率は70%</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 使い方：</strong> 「この形は上昇する傾向」という確率的な根拠が得られます。これを他の分析と組み合わせることで、判断の精度が上がります。
+      </div>
+    </div>
+
+    <!-- ⑧ AI検出機能 -->
+    <div class="guide-section" id="s8">
+      <div class="section-header">
+        <div class="section-icon">⚡</div>
+        <div class="section-title-block">
+          <h2>⑧ AI検出機能</h2>
+          <div class="subtitle">プロの分析を完全自動化</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>プロのトレーダーが手作業で行う分析を、AIが自動検出します。</strong> チャンスや危機を見落としません。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🚨 暴落検出</h3>
+        <p>AIが「この株は暴落する可能性がある」と判定した場合、アラート表示：</p>
+        <ul>
+          <li>売り圧力が極端に強い</li>
+          <li>出来高が異常に多い（大口の売却）</li>
+          <li>テクニカル指標が過度な悪化を示している</li>
+        </ul>
+      </div>
+
+      <!-- AI検出機能の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/09-ai-detection.png" alt="AI検出機能のアラート表示" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 AI検出機能：暴落検出・ブレイクアウト検出</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 ブレイクアウト検出</h3>
+        <p>AIが「この株は上昇ブレイクアウトの寸前」と判定した場合、チャンスアラート：</p>
+        <ul>
+          <li>長期的な抵抗線を突破しようとしている</li>
+          <li>買い圧力が増している</li>
+          <li>出来高が上昇している</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 サポート / レジスタンス自動生成</h3>
+        <p>チャート上に、自動的に重要な価格レベルが表示：</p>
+        <ul>
+          <li><strong>サポート（支持線）：</strong> この価格で反発する傾向がある下値</li>
+          <li><strong>レジスタンス（抵抗線）：</strong> この価格で売られる傾向がある上値</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>💼 出来高壁（大口検出）</h3>
+        <p>大口の投資家が仕込んでいる価格帯を自動検出：</p>
+        <ul>
+          <li>過去に大量に取引された価格帯が強く表示</li>
+          <li>大口が注目している価格だから、上昇・下落の転換点になりやすい</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ⑨ 日経比較（ベンチマーク） -->
+    <div class="guide-section" id="s9">
+      <div class="section-header">
+        <div class="section-icon">📉</div>
+        <div class="section-title-block">
+          <h2>⑨ 日経比較（ベンチマーク）</h2>
+          <div class="subtitle">個別銘柄 vs 日経225で実力を判定</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>「この銘柄は市場全体より強いのか？弱いのか？」を判定するツールです。</strong> 日経平均（日経225）をベンチマークとして、個別銘柄のパフォーマンスを比較分析します。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 日経vs個別銘柄の比較表示</h3>
+        <p>同じチャート上に2つの値動きを重ねて表示：</p>
+        <ul>
+          <li><strong>日経225（青線）：</strong> 日本全体の株価指数。市場全体の動き</li>
+          <li><strong>個別銘柄（オレンジ線）：</strong> 注目している銘柄の値動き</li>
+        </ul>
+        <p>2つの線を比較することで、その銘柄が「市場全体より上昇しているのか」「下落しているのか」が一目でわかります。</p>
+      </div>
+
+      <!-- 日経比較の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/10-nikkei-comparison.png" alt="日経比較チャート" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 日経比較：個別銘柄 vs 日経225</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 相対パフォーマンスの分析</h3>
+        <p>AIが自動で以下を計算・表示：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>アウトパフォーマンス率：</strong> この銘柄が日経より強い確率。70%以上あれば、相場全体より強い銘柄</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>相対強度（RS）：</strong> 銘柄値段 ÷ 日経225で計算。上昇 = 相対的に強い</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>ベータ値：</strong> 日経が1%上昇したとき、この銘柄は何%上昇するか。大きいほどハイリスク・ハイリターン</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎯 実践的な活用シーン</h3>
+        <p><strong>シーン1：強気市場での銘柄選び</strong></p>
+        <ul>
+          <li>日経225が上昇している相場で</li>
+          <li>さらにこの銘柄のアウトパフォーマンス率が70%以上なら</li>
+          <li>→ 「市場全体より強い銘柄」=買いチャンス</li>
+        </ul>
+        <p><strong>シーン2：弱気市場での防御</strong></p>
+        <ul>
+          <li>日経225が下落している相場で</li>
+          <li>この銘柄だけがアウトパフォーマンスしている（赤線が上向き）なら</li>
+          <li>→ 「市場から資金が逃げても買われている」=強い銘柄</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>⚠️ ベータ値の読み方</h3>
+        <p>ベータ値はリスク・リターンの指標です：</p>
+        <ul>
+          <li><strong>ベータ = 1.0：</strong> 日経と同じペースで上下。市場平均的なリスク</li>
+          <li><strong>ベータ > 1.0：</strong> 日経より激しく上下。上昇時は儲けやすいが、下落時は損失も大きい（ハイリスク）</li>
+          <li><strong>ベータ < 1.0：</strong> 日経より穏やかに上下。安定的だが、上昇余地も限定的（ローリスク）</li>
+        </ul>
+      </div>
+
+      <div class="note-box">
+        <strong>💡 活用のコツ：</strong> 日経比較は「この銘柄は市場から評価されているか」を判定するツールです。アウトパフォーマンス率が高い銘柄を、他の分析（AI分析、未来予測）と組み合わせると、より確度の高い投資判断ができます。
+      </div>
+
+      <div class="tip-box">
+        <strong>📌 重要な視点：</strong> 「日経より強い = 必ず上昇する」ではありません。むしろ「市場全体との相対的な強さ」を理解することが大切です。例えば、日経が年50%下落しているときに、この銘柄が年20%下落していれば、相対的には「強い銘柄」です。
+      </div>
+    </div>
+
+    <!-- ⑩ 個別銘柄比較チャート -->
+    <div class="guide-section" id="s10">
+      <div class="section-header">
+        <div class="section-icon">🔀</div>
+        <div class="section-title-block">
+          <h2>⑩ 個別銘柄比較チャート</h2>
+          <div class="subtitle">複数の銘柄を同時に分析・比較</div>
+        </div>
+      </div>
+
+      <div class="section-content">
+        <p><strong>2〜5つの銘柄を同じチャート上に重ねて表示し、値動きを比較するツールです。</strong> 類似企業の相対的な強さや、セクター内での優劣を一目で判定できます。</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>📊 複数銘柄の並列表示</h3>
+        <p>最大5銘柄まで、同じチャート上に表示可能：</p>
+        <ul>
+          <li><strong>銘柄A（赤線）、銘柄B（青線）、銘柄C（黄線）...</strong> など、色分けして表示</li>
+          <li>期間（日足・週足・月足）を自由に選択</li>
+          <li>移動平均線やインジケーターも各銘柄ごとに表示可能</li>
+        </ul>
+      </div>
+
+      <!-- 個別銘柄比較の画像 -->
+      <div style="margin:32px 0;text-align:center;">
+        <img src="images/11-individual-comparison.png" alt="個別銘柄比較チャート" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);">
+        <p style="font-size:12px;color:var(--fog);margin-top:12px;">📸 個別銘柄比較：最大5銘柄の同時表示</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎯 活用シーン①：セクター内での相対比較</h3>
+        <p><strong>例：自動車業界の大手3社を比較</strong></p>
+        <ul>
+          <li>トヨタ（1234）vs ホンダ（1267） vs 日産（1268）</li>
+          <li>同じセクターでも、値動きが異なることがわかる</li>
+          <li>→ 「この3社の中で、今最も強い銘柄はどれか？」が一目瞭然</li>
+        </ul>
+        <p><strong>見分け方：</strong></p>
+        <ul>
+          <li>グラフが上にある銘柄 = より強いパフォーマンス</li>
+          <li>グラフが下にある銘柄 = より弱いパフォーマンス</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎯 活用シーン②：類似企業の力関係把握</h3>
+        <p><strong>例：IT企業の成長比較</strong></p>
+        <ul>
+          <li>ソフトバンクグループ（9984）vs GAFAM関連銘柄</li>
+          <li>国内IT企業 vs 海外IT企業の強さを比較</li>
+          <li>→ 「今はどの企業が買われているのか？」が判定できる</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>🎯 活用シーン③：市場トレンド追跡</h3>
+        <p><strong>例：銀行セクター全体の動き</strong></p>
+        <ul>
+          <li>メガバンク3社（三菱UFJ, みずほ, 三井住友）を同時表示</li>
+          <li>3社が全て上昇 → 銀行セクター全体が買われている</li>
+          <li>1社だけ下落 → その銀行固有の問題がある</li>
+          <li>→ 「セクター全体なのか、企業個別なのか」が判定できる</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>📈 パフォーマンス統計の自動表示</h3>
+        <p>AIが各銘柄のパフォーマンスを自動計算・表示：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>過去1ヶ月の上昇率：</strong> A銘柄 +15%, B銘柄 +8%, C銘柄 -2%</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>ボラティリティ（変動性）：</strong> どの銘柄がより激しく変動しているか</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>相関係数：</strong> 2つの銘柄の値動きがどれほど連動しているか</div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <div class="feature-item-text"><strong>ドローダウン（最大損失）：</strong> ピークからどこまで下げたか</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <h3>⚙️ 相関係数の読み方</h3>
+        <p>2つの銘柄の値動きの「連動度」を示します（-1〜+1）：</p>
+        <ul>
+          <li><strong>相関係数 = +1：</strong> 2つの銘柄が完全に同じ値動き。分散投資にならない</li>
+          <li><strong>相関係数 = +0.7〜0.9：</strong> 強く連動している。セクター内の銘柄によくある</li>
+          <li><strong>相関係数 = +0.3〜0.6：</strong> 中程度に連動。バランスの取れた分散投資</li>
+          <li><strong>相関係数 = 0：</strong> 全く無関係な値動き。理想的な分散投資</li>
+          <li><strong>相関係数 = -1：</strong> 完全に反対の値動き。最高のヘッジ</li>
+        </ul>
+      </div>
+
+      <div class="note-box">
+        <strong>💡 アクティブ投資家向けTips：</strong> 複数銘柄を比較すると、「相対的な強さ」が見える。セクター全体が上昇していても、その中で「最も強い銘柄」を見つけることで、より高いリターンが期待できます。
+      </div>
+
+      <div class="important-box">
+        <strong>⚠️ 注意：</strong> 過去の相関係数が高いからといって、将来も同じパターンが続くとは限りません。市場環境の変化で相関が崩れることもあります。定期的に相関係数を確認しましょう。
+      </important-box>
+
+      <div class="feature-card">
+        <h3>🎓 初心者向け使用例</h3>
+        <p><strong>Step 1：興味のあるセクターを選ぶ</strong></p>
+        <p>例：「AI関連企業に投資したい」→ AI関連銘柄3〜4社を選択</p>
+        <p><strong>Step 2：チャートで比較</strong></p>
+        <p>過去3ヶ月の値動きを比較 → 「この銘柄が最も強いな」と判定</p>
+        <p><strong>Step 3：相関係数をチェック</strong></p>
+        <p>選んだ銘柄の相関係数が +0.8以上なら → 「リスク集中」→ 異なるセクターも買う</p>
+        <p><strong>Step 4：買付</strong></p>
+        <p>個別分析（AI分析、未来予測）も合わせて確認して、買付判断</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 ポートフォリオ構築のコツ：</strong> 複数銘柄を比較して、相関係数が低い銘柄を組み合わせることで、リスクを分散しながらリターンを狙えます。これが「分散投資」の基本です。
+      </div>
+    </div>
+
+    <!-- まとめセクション -->
+    <div class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">🎯</div>
+        <div class="section-title-block">
+          <h2>AI×チャートを活用するには</h2>
+          <div class="subtitle">ステップバイステップガイド</div>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <h3>初心者向け（最初の1週間）</h3>
+        <ul>
+          <li>✓ チャート機能に慣れる（ローソク足と移動平均線のみ）</li>
+          <li>✓ AI分析の「上昇確率」を理解する</li>
+          <li>✓ ランキング機能で注目銘柄を見つける</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>中級者向け（2週間〜1ヶ月）</h3>
+        <ul>
+          <li>✓ テクニカルインジケーター（MACD, RSI）を活用</li>
+          <li>✓ 未来予測ゾーンで投資目標を設定</li>
+          <li>✓ セクター分析で業種の動きを追跡</li>
+          <li>✓ 日経比較でアウトパフォーマンス銘柄を発掘</li>
+          <li>✓ 個別銘柄比較で相対的な強さを判定</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h3>上級者向け（1ヶ月以上）</h3>
+        <ul>
+          <li>✓ 類似チャート検索で過去パターンを活用</li>
+          <li>✓ モンテカルロ予測でリスク管理</li>
+          <li>✓ AI検出機能でプロ級の分析を自動化</li>
+          <li>✓ 日経比較でベータ値を使ったリスク調整</li>
+          <li>✓ 個別銘柄比較で相関係数ベースのポートフォリオ構築</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>最後に：</strong> AI×チャートは「判断を完全に任せるツール」ではなく、「判断をサポートするツール」です。AIの分析結果を参考に、必ず自分自身で検討してから投資判断をしてください。
+    </div>
+
+    <!-- CTA -->
+    <div class="button-group">
+      <a href="index-5.html#pricing" class="btn btn-primary">PROプランを見る</a>
+      <a href="chat.html" class="btn">AIサポートチャットで質問</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">AI × チャート</div>
+    <div class="foot-links">
+      <a href="index-5.html">Home</a>
+      <a href="ai-chart-guide.html">Guide</a>
+      <a href="chat.html">Support</a>
+      <a href="terms.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══ CURSOR ══ */
+const dot=document.getElementById('cursorDot'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function raf(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(raf)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(201,168,76,.7)';dot.style.width='3px';dot.style.height='3px'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(201,168,76,.45)';dot.style.width='6px';dot.style.height='6px'});
+});
+
+/* ══ SMOOTH SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const el=document.querySelector(id);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'})});
+});
+</script>
+</body>
+</html>

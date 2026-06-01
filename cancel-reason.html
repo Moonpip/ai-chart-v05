@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>解約理由｜AI×チャート</title>
+  <meta name="description" content="AI×チャートの解約理由をご入力ください。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="cancel-reason-page">
+  <div class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="ホームページ5.html">
+        <img class="logo" src="app_icon.png" alt="AI×チャート ロゴ">
+        <div class="brand-title">
+          <div class="name">AI×チャート</div>
+          <div class="tag">40年データ × AI分析</div>
+        </div>
+      </a>
+      <nav class="main-nav">
+        <a href="dashboard.html">ダッシュボード</a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="page-content">
+    <div class="container">
+      <div class="page-title">
+        <h1>解約理由</h1>
+        <p>お聞かせいただいた内容は今後のサービス改善に活用します</p>
+      </div>
+
+      <div class="cancel-reason-card">
+        <div class="form-group">
+          <label for="reason">解約理由</label>
+          <select id="reason" name="reason" class="form-select">
+            <option value="">選択してください</option>
+            <option value="price">料金が高い</option>
+            <option value="difficult">使い方が難しい</option>
+            <option value="migrate">他サービスへ移行</option>
+            <option value="unnecessary">必要なくなった</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="comment">コメント（任意）</label>
+          <textarea id="comment" class="form-textarea" rows="4" placeholder="ご意見・ご要望があればお書きください"></textarea>
+        </div>
+        <p id="cancel-error" style="color:#e74c3c;font-size:13px;margin:0 0 12px;display:none;"></p>
+        <div class="cancel-reason-actions">
+          <button type="button" id="btn-cancel-submit" class="btn btn-primary">解約を確定する</button>
+          <a href="dashboard.html" class="btn">キャンセル</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div>© <span id="y"></span> AI×チャート. All rights reserved.</div>
+      <div class="small-links">
+        <a href="ホームページ5.html">トップ</a>
+        <a href="billing.html">料金</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  <script>
+  (function () {
+    var btn     = document.getElementById('btn-cancel-submit');
+    var errEl   = document.getElementById('cancel-error');
+    var reasonEl= document.getElementById('reason');
+    var commentEl=document.getElementById('comment');
+
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var reason  = reasonEl.value;
+      var comment = commentEl.value.trim();
+
+      if (!reason) {
+        errEl.textContent = '解約理由を選択してください';
+        errEl.style.display = 'block';
+        return;
+      }
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = '処理中...';
+
+      fetch('/api/cancel', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason, comment: comment })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            window.location.href = 'cancel-complete.html';
+          } else {
+            errEl.textContent = data.error || '解約処理に失敗しました。もう一度お試しください。';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '解約を確定する';
+          }
+        })
+        .catch(function () {
+          errEl.textContent = '通信エラー。しばらくしてからお試しください。';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = '解約を確定する';
+        });
+    });
+  })();
+  </script>
+</body>
+</html>

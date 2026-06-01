@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャート 株価データセット販売。40年分の日本株データを各種形式で提供。"/>
+  <title>データセット販売 | AI×チャート</title>
+  <meta property="og:title" content="データセット販売 | AI×チャート"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: hidden; scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: #080806;
+  color: #e8e0cc;
+  font-family: 'Noto Sans JP', system-ui, sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+a { color: inherit; text-decoration: none; }
+img, video { display: block; max-width: 100%; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* CURSOR */
+.cursor-dot {
+  position: fixed; width: 6px; height: 6px;
+  background: #c9a84c; border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .15s, height .15s, background .15s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(201, 168, 76, .45); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width .35s cubic-bezier(.23, 1, .32, 1),
+              height .35s cubic-bezier(.23, 1, .32, 1),
+              opacity .35s, border-color .35s;
+}
+@media(pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none; }
+  body { cursor: auto; }
+}
+
+:root {
+  --ink: #080806;
+  --amber: #c9a84c;
+  --amber2: #e8cc80;
+  --smoke: rgba(232, 224, 204, .55);
+  --fog: rgba(232, 224, 204, .28);
+  --gap: clamp(16px, 3vw, 32px);
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1;
+  pointer-events: none;
+  opacity: .028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+.serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+h1, h2, h3, h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  letter-spacing: .01em;
+  line-height: 1.15;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  position: relative;
+  z-index: 2;
+}
+
+header {
+  border-bottom: 1px solid rgba(201, 168, 76, .14);
+  background: linear-gradient(180deg, rgba(8, 8, 6, .95) 0%, rgba(8, 8, 6, .85) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: color .3s;
+  font-family: 'Cormorant Garamond', serif;
+  color: #c9a84c;
+}
+
+.logo:hover { color: var(--amber2); }
+
+.header-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.header-links a {
+  font-size: 13px;
+  letter-spacing: .02em;
+  color: var(--fog);
+  transition: color .3s;
+  text-decoration: none;
+}
+
+.header-links a:hover { color: var(--amber); }
+
+.page-title-section {
+  padding: 60px 0 48px 0;
+  text-align: center;
+  animation: fadeIn .8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-title-section h1 {
+  font-size: clamp(36px, 8vw, 60px);
+  margin-bottom: 16px;
+  color: var(--amber2);
+  letter-spacing: .02em;
+}
+
+.page-title-section p {
+  font-size: 16px;
+  color: var(--fog);
+  letter-spacing: .01em;
+}
+
+.products-section { padding: 60px 0; }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
+  animation: slideIn .8s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.product-card {
+  background: rgba(201, 168, 76, .05);
+  border: 1px solid rgba(201, 168, 76, .15);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all .3s;
+}
+
+.product-card:hover {
+  border-color: var(--amber);
+  background: rgba(201, 168, 76, .08);
+  transform: translateY(-4px);
+}
+
+.product-thumbnail {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, rgba(201, 168, 76, .1), rgba(76, 187, 138, .1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  border-bottom: 1px solid rgba(201, 168, 76, .1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.product-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.product-gallery-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(201, 168, 76, .8);
+  color: #080806;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.product-info {
+  padding: 28px;
+}
+
+.product-title {
+  font-size: 20px;
+  color: var(--amber2);
+  margin-bottom: 8px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.product-desc {
+  font-size: 13px;
+  color: var(--fog);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.product-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.spec-item {
+  padding: 8px;
+  background: rgba(201, 168, 76, .03);
+  border-radius: 6px;
+}
+
+.spec-label {
+  color: var(--fog);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.spec-value {
+  color: var(--smoke);
+  font-weight: 500;
+}
+
+.product-price {
+  font-size: 28px;
+  color: var(--amber2);
+  margin-bottom: 16px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.product-price-label {
+  font-size: 12px;
+  color: var(--fog);
+  margin-bottom: 4px;
+}
+
+.product-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.btn {
+  padding: 12px 16px;
+  border: 1px solid rgba(201, 168, 76, .4);
+  border-radius: 8px;
+  background: transparent;
+  color: #e8e0cc;
+  font-size: 13px;
+  letter-spacing: .02em;
+  transition: all .3s;
+  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.btn:hover {
+  border-color: var(--amber);
+  background: rgba(201, 168, 76, .1);
+}
+
+.btn-primary {
+  background: var(--amber);
+  color: #080806;
+  border-color: var(--amber);
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: var(--amber2);
+  border-color: var(--amber2);
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .8);
+  z-index: 1000;
+  animation: fadeIn .3s ease;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #0f0e0a;
+  border: 1px solid rgba(201, 168, 76, .2);
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--fog);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.modal-close:hover { color: var(--amber); }
+
+.modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.modal-gallery img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 168, 76, .15);
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.modal-gallery img:hover {
+  border-color: var(--amber);
+  transform: scale(1.02);
+}
+
+.modal-preview {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(201, 168, 76, .2);
+}
+
+footer {
+  border-top: 1px solid rgba(201, 168, 76, .14);
+  padding: 48px 0 24px 0;
+  background: rgba(8, 8, 6, .5);
+  margin-top: 80px;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--fog);
+}
+
+.foot-brand {
+  font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--amber);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.foot-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.foot-links a {
+  color: var(--fog);
+  transition: color .3s;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.foot-links a:hover { color: var(--amber); }
+
+@media(max-width: 768px) {
+  .foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .modal-content {
+    padding: 24px;
+  }
+}
+
+@media(max-width: 640px) {
+  .page-title-section { padding: 40px 0 32px 0; }
+  .product-buttons { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="index-5.html" class="logo serif">AI × チャート</a>
+      <nav class="header-links">
+        <a href="index-5.html#features">Features</a>
+        <a href="index-5.html#pricing">Pricing</a>
+        <a href="data-sales.html">Data</a>
+        <a href="ai-chart-guide.html">Guide</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+  <div class="wrap">
+    <h1>データセット販売</h1>
+    <p>40年分の日本株価データを購入可能</p>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+  <div class="wrap">
+    <div class="products-grid" id="productsGrid">
+      <!-- 商品カードはJavaScriptで動的に生成 -->
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal" id="galleryModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle" style="color:var(--amber2);margin-bottom:24px;font-family:'Cormorant Garamond',serif;font-size:28px;"></h2>
+    <img id="modalPreview" class="modal-preview" src="" alt="">
+    <h3 style="color:var(--amber);margin-bottom:16px;font-size:14px;letter-spacing:.04em;">ギャラリー</h3>
+    <div class="modal-gallery" id="modalGallery"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">AI × チャート</div>
+    <div class="foot-links">
+      <a href="index-5.html">Home</a>
+      <a href="data-sales.html">Data Sales</a>
+      <a href="ai-chart-guide.html">Guide</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* PRODUCTS DATA */
+const products = [
+  {
+    id: 1,
+    title: "日本全株価データセット",
+    description: "6000銘柄の40年分の日本株価データ。OHLCV形式。",
+    price: "¥9,800",
+    icon: "📊",
+    specs: { "銘柄数": "6,000+", "期間": "40年", "形式": "CSV/Excel" },
+    gallery: ["images/data-01-preview.png", "images/data-01-chart.png", "images/data-01-analysis.png"],
+    fullDescription: `<h2>日本全株価データセット 詳細</h2><p>日本全域の6,000銘柄以上の40年分の株価データを完全網羅したデータセットです。</p><h3>📊 含まれるデータ</h3><ul><li>始値（Open）</li><li>高値（High）</li><li>安値（Low）</li><li>終値（Close）</li><li>出来高（Volume）</li></ul><p><strong>価格：¥9,800</strong></p>`
+  },
+  {
+    id: 2,
+    title: "テクニカル指標付きデータセット",
+    description: "MA, MACD, RSI などのインジケーター計算済みデータ。すぐに分析可能。",
+    price: "¥14,800",
+    icon: "📈",
+    specs: { "銘柄数": "2,000+", "指標数": "15+", "形式": "JSON/CSV" },
+    gallery: ["images/data-02-preview.png", "images/data-02-indicators.png", "images/data-02-usage.png"],
+    fullDescription: `<h2>テクニカル指標付きデータセット 詳細</h2><p>2,000銘柄以上について、15種類以上のテクニカル指標があらかじめ計算されたデータセットです。</p><p><strong>価格：¥14,800</strong></p>`
+  },
+  {
+    id: 3,
+    title: "セクター別分類データ",
+    description: "33業種別に分類・集計された日本株データ。業種分析向け。",
+    price: "¥11,800",
+    icon: "🔥",
+    specs: { "業種数": "33", "期間": "30年", "形式": "SQL/CSV" },
+    gallery: ["images/data-03-preview.png", "images/data-03-sector.png", "images/data-03-analysis.png"],
+    fullDescription: `<h2>セクター別分類データ 詳細</h2><p>日本株を33業種に分類し、業種ごとにセクター指標を集計したデータセットです。</p><p><strong>価格：¥11,800</strong></p>`
+  },
+  {
+    id: 4,
+    title: "トレード分析用カスタムデータ",
+    description: "出来高、買上下分離、資金流などを含めたプロ仕様のデータセット。",
+    price: "¥19,800",
+    icon: "⚡",
+    specs: { "銘柄数": "1,500+", "粒度": "1分足対応", "形式": "HDF5/Parquet" },
+    gallery: ["images/data-04-preview.png", "images/data-04-volume.png", "images/data-04-advanced.png"],
+    fullDescription: `<h2>トレード分析用カスタムデータ 詳細</h2><p>プロのトレーダー向けに、出来高分析や買上下分離など高度なデータを含むデータセットです。</p><p><strong>価格：¥19,800</strong></p>`
+  },
+  {
+    id: 5,
+    title: "機械学習用データセット",
+    description: "正規化・特徴抽出済みの機械学習向けデータ。即座にモデル学習可能。",
+    price: "¥24,800",
+    icon: "🤖",
+    specs: { "サンプル": "1M+", "特徴": "100+", "形式": "NumPy/TensorFlow" },
+    gallery: ["images/data-05-preview.png", "images/data-05-ml.png", "images/data-05-features.png"],
+    fullDescription: `<h2>機械学習用データセット 詳細</h2><p>100種類以上の特徴量があらかじめ抽出・正規化されたデータセットです。</p><p><strong>価格：¥24,800</strong></p>`
+  },
+  {
+    id: 6,
+    title: "全データ統合パッケージ",
+    description: "上記すべてのデータセットを含む。企業向け・研究向けの完全パッケージ。",
+    price: "¥49,800",
+    icon: "💎",
+    specs: { "内容": "全5種類", "更新": "毎日", "サポート": "含む" },
+    gallery: ["images/data-06-preview.png", "images/data-06-bundle.png", "images/data-06-support.png"],
+    fullDescription: `<h2>全データ統合パッケージ 詳細</h2><p>上記5つのデータセット全てを含む、完全なマスターパッケージです。</p><p><strong>価格：¥49,800</strong></p>`
+  }
+];
+
+/* RENDER PRODUCTS */
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="product-card">
+      <div class="product-thumbnail" onclick="openModal(${p.id})">
+        <div style="font-size:64px;pointer-events:none;">${p.icon}</div>
+        <div class="product-gallery-badge">📸 ギャラリー</div>
+      </div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-desc">${p.description}</div>
+        <div class="product-specs">
+          ${Object.entries(p.specs).map(([k,v]) => `<div class="spec-item"><div class="spec-label">${k}</div><div class="spec-value">${v}</div></div>`).join('')}
+        </div>
+        <div class="product-price-label">価格</div>
+        <div class="product-price">${p.price}</div>
+        <div class="product-buttons">
+          <button class="btn" onclick="viewDetails(${p.id})">詳細</button>
+          <button class="btn btn-primary" onclick="purchaseData(${p.id})">購入 →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* MODAL */
+function openModal(productId) {
+  const product = products.find(p => p.id === productId);
+  if (!product) return;
+  document.getElementById('modalTitle').textContent = product.title;
+  document.getElementById('modalPreview').src = product.gallery[0];
+  const gallery = document.getElementById('modalGallery');
+  gallery.innerHTML = product.gallery.map(img => `<img src="${img}" alt="Gallery" onclick="document.getElementById('modalPreview').src='${img}';">`).join('');
+  document.getElementById('galleryModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('galleryModal').classList.remove('active');
+}
+
+function viewDetails(productId) {
+  window.location.href = `product-detail-improved.html?id=${productId}`;
+}
+
+function purchaseData(productId) {
+  window.location.href = `checkout.html?product=${productId}`;
+}
+
+/* CURSOR */
+const dot = document.getElementById('cursorDot'), ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+(function raf() {
+  rx += (mx - rx) * .18;
+  ry += (my - ry) * .18;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(raf);
+})();
+
+document.querySelectorAll('a,button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width = '56px';
+    ring.style.height = '56px';
+    ring.style.borderColor = 'rgba(201,168,76,.7)';
+    dot.style.width = '3px';
+    dot.style.height = '3px';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+    ring.style.borderColor = 'rgba(201,168,76,.45)';
+    dot.style.width = '6px';
+    dot.style.height = '6px';
+  });
+});
+
+document.getElementById('galleryModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* INIT */
+renderProducts();
+</script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャートのサービス利用規約"/>
+  <title>利用規約 | AI×チャート｜40年データ×AI分析の株価チャート</title>
+  <meta property="og:title" content="利用規約 | AI×チャート"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* ═══════════════════════════════════════════
+   RESET & FOUNDATIONS
+═══════════════════════════════════════════ */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth;font-size:16px}
+body{
+  background:#080806;
+  color:#e8e0cc;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%}
+button{font-family:inherit;cursor:none}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+.cursor-dot{
+  position:fixed;width:6px;height:6px;
+  background:#c9a84c;border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+  mix-blend-mode:difference;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(201,168,76,.45);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .35s cubic-bezier(.23,1,.32,1),
+             height .35s cubic-bezier(.23,1,.32,1),
+             opacity .35s,border-color .35s;
+}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}button{cursor:pointer}}
+
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root{
+  --ink:    #080806;
+  --ink1:   #0f0e0a;
+  --ink2:   #161410;
+  --amber:  #c9a84c;
+  --amber2: #e8cc80;
+  --amber3: #f5e4a8;
+  --smoke:  rgba(232,224,204,.55);
+  --fog:    rgba(232,224,204,.28);
+  --ghost:  rgba(232,224,204,.10);
+  --r:12px;
+  --gap:clamp(16px,3vw,32px);
+}
+
+/* ═══════════════════════════════════════════
+   NOISE GRAIN OVERLAY
+═══════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.mono {font-family:'JetBrains Mono',monospace}
+
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;letter-spacing:.01em;line-height:1.15}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:900px;margin:0 auto;padding:0 var(--gap);position:relative;z-index:2}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  border-bottom:1px solid rgba(201,168,76,.14);
+  background:linear-gradient(180deg,rgba(8,8,6,.95) 0%,rgba(8,8,6,.85) 100%);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+
+.header-content{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 0;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-decoration:none;
+  transition:color .3s;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.logo:hover{color:var(--amber2)}
+
+.header-links{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+.header-links a{
+  font-size:13px;
+  letter-spacing:.02em;
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+}
+
+.header-links a:hover{color:var(--amber)}
+
+@media(max-width:640px){
+  .header-links{gap:12px;font-size:12px}
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TITLE SECTION
+═══════════════════════════════════════════ */
+.page-title-section{
+  padding:60px 0 48px 0;
+  text-align:center;
+  animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.page-title-section h1{
+  font-size:clamp(32px,8vw,56px);
+  margin-bottom:16px;
+  color:var(--amber2);
+  letter-spacing:.02em;
+}
+
+.page-title-section p{
+  font-size:14px;
+  color:var(--fog);
+  letter-spacing:.01em;
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT SECTIONS
+═══════════════════════════════════════════ */
+.content-wrapper{
+  padding:40px 0;
+}
+
+.content-section{
+  margin-bottom:56px;
+  animation:slideIn .8s ease backwards;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.content-section:nth-child(1){animation-delay:.1s}
+.content-section:nth-child(2){animation-delay:.2s}
+.content-section:nth-child(3){animation-delay:.3s}
+.content-section:nth-child(4){animation-delay:.4s}
+.content-section:nth-child(5){animation-delay:.5s}
+.content-section:nth-child(6){animation-delay:.6s}
+
+.section-title{
+  font-size:24px;
+  color:var(--amber2);
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(201,168,76,.2);
+}
+
+.section-content{
+  line-height:1.8;
+  font-size:15px;
+  color:var(--smoke);
+}
+
+.section-content p{
+  margin-bottom:16px;
+}
+
+.section-content ul,
+.section-content ol{
+  margin:16px 0 16px 24px;
+}
+
+.section-content li{
+  margin-bottom:10px;
+  line-height:1.8;
+}
+
+.section-content strong{
+  color:var(--amber2);
+  font-weight:500;
+}
+
+/* ═══════════════════════════════════════════
+   TABLE OF CONTENTS
+═══════════════════════════════════════════ */
+.toc{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;
+  padding:24px;
+  margin-bottom:48px;
+}
+
+.toc-title{
+  font-size:14px;
+  color:var(--amber);
+  letter-spacing:.04em;
+  margin-bottom:16px;
+  font-weight:500;
+}
+
+.toc-list{
+  list-style:none;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.toc-list li a{
+  font-size:13px;
+  color:var(--fog);
+  transition:color .3s;
+}
+
+.toc-list li a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:640px){
+  .toc-list{grid-template-columns:1fr}
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid rgba(201,168,76,.14);
+  padding:48px 0 24px 0;
+  background:rgba(8,8,6,.5);
+  margin-top:80px;
+}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:24px;
+  font-size:12px;
+  color:var(--fog);
+}
+
+.foot-brand{
+  font-size:16px;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--amber);
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+.foot-links{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.foot-links a{
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.foot-links a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:768px){
+  .foot{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:640px){
+  .page-title-section{padding:40px 0 32px 0}
+  .section-title{font-size:20px}
+  .toc{padding:16px}
+}
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="index-5.html" class="logo serif">AI × チャート</a>
+      <nav class="header-links">
+        <a href="index-5.html#features">Features</a>
+        <a href="index-5.html#pricing">Pricing</a>
+        <a href="terms.html">利用規約</a>
+        <a href="tokushoho.html">特商法</a>
+        <a href="privacy.html">プライバシー</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+  <div class="wrap">
+    <h1>利用規約</h1>
+    <p>Service Terms of Use</p>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-title">目次</div>
+    <ul class="toc-list">
+      <li><a href="#s1">第1条：総則</a></li>
+      <li><a href="#s2">第2条：利用資格</a></li>
+      <li><a href="#s3">第3条：サービス内容</a></li>
+      <li><a href="#s4">第4条：利用料金</a></li>
+      <li><a href="#s5">第5条：知的財産権</a></li>
+      <li><a href="#s6">第6条：免責事項</a></li>
+      <li><a href="#s7">第7条：利用禁止事項</a></li>
+      <li><a href="#s8">第8条：解約</a></li>
+    </ul>
+  </nav>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div class="wrap">
+
+    <section class="content-section" id="s1">
+      <h2 class="section-title">第1条：総則</h2>
+      <div class="section-content">
+        <p>本規約は、AI×チャート（以下「本サービス」）の利用者（以下「ユーザー」）とAI×チャート運営者（以下「当社」）との間における本サービスの利用に関するすべての事項について定めるものです。</p>
+        <p>本サービスを利用することにより、ユーザーは本規約のすべての条件に同意したものとみなされます。</p>
+      </div>
+    </section>
+
+    <section class="content-section" id="s2">
+      <h2 class="section-title">第2条：利用資格</h2>
+      <div class="section-content">
+        <p>本サービスは、以下の条件をすべて満たす個人ユーザーまたは法人ユーザーが利用可能です：</p>
+        <ul>
+          <li>18歳以上の個人、または法令に基づき設立された法人であること</li>
+          <li>日本の居住者であること</li>
+          <li>本規約に同意し、遵守することができること</li>
+          <li>過去に本規約違反を理由に利用を制限されていないこと</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="content-section" id="s3">
+      <h2 class="section-title">第3条：サービス内容</h2>
+      <div class="section-content">
+        <p><strong>本サービスの主な機能：</strong></p>
+        <ul>
+          <li>40年間の日本株価データベースの提供</li>
+          <li>AI による確率ベースの市場分析</li>
+          <li>テクニカル分析・ファンダメンタル分析の統合表示</li>
+          <li>リアルタイム市場ニュースの配信</li>
+          <li>ユーザー独自のポートフォリオ管理ツール</li>
+        </ul>
+        <p>当社は、技術的または運用上の理由により、事前の通知なくサービス内容を変更する場合があります。</p>
+      </div>
+    </section>
+
+    <section class="content-section" id="s4">
+      <h2 class="section-title">第4条：利用料金</h2>
+      <div class="section-content">
+        <p><strong>料金体系：</strong></p>
+        <ul>
+          <li><strong>無料プラン：</strong> 基本機能の利用、月10回まで</li>
+          <li><strong>Pro プラン：</strong> 月額 ¥980、無制限利用</li>
+          <li><strong>Enterprise：</strong> お問い合わせください</li>
+        </ul>
+        <p>料金は、予告なく変更される場合があります。変更の場合、最低30日前に通知するものとします。</p>
+        <p>払い込まれた料金は、いかなる理由においても払い戻されません。ただし、当社の責による重大なサービス不具合の場合はこの限りではありません。</p>
+      </div>
+    </section>
+
+    <section class="content-section" id="s5">
+      <h2 class="section-title">第5条：知的財産権</h2>
+      <div class="section-content">
+        <p>本サービスに関するすべての知的財産権（著作権、特許権、商標権、その他一切の知的財産権）は、当社またはその第三者権利者に帰属します。</p>
+        <p>ユーザーは、個人の非商業的目的でのみ本サービスの利用が許可されます。</p>
+        <p>本サービスの内容の無断複製、転載、転売、機械学習への利用は固く禁止します。</p>
+      </div>
+    </section>
+
+    <section class="content-section" id="s6">
+      <h2 class="section-title">第6条：免責事項</h2>
+      <div class="section-content">
+        <p><strong>当社は、以下について一切の責任を負いません：</strong></p>
+        <ul>
+          <li>本サービスで提供されるAI分析結果の正確性や完全性</li>
+          <li>本サービスの利用により生じた損害（直接的・間接的を問わず）</li>
+          <li>市場変動やユーザーの投資判断による損失</li>
+          <li>第三者のコンテンツ・リンク先の信頼性や正確性</li>
+          <li>サービスの中断、遅延、エラーにより生じた損害</li>
+        </ul>
+        <p><strong>重要：</strong> 本サービスは情報提供および分析ツールです。投資判断は自己責任で行ってください。本サービスの利用により損失が生じた場合でも、当社は賠償責任を負いません。</p>
+      </div>
+    </section>
+
+    <section class="content-section" id="s7">
+      <h2 class="section-title">第7条：利用禁止事項</h2>
+      <div class="section-content">
+        <p>ユーザーは、以下の行為を一切してはいけません：</p>
+        <ul>
+          <li>不正アクセス、ハッキング、データ盗聴、スパイウェア使用</li>
+          <li>本サービスへの攻撃、過度なアクセス、サービス妨害</li>
+          <li>違法な情報の取得、販売、転送</li>
+          <li>他者になりすまし、詐欺行為</li>
+          <li>本規約に違反する行為全般</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="content-section" id="s8">
+      <h2 class="section-title">第8条：解約・アカウント削除</h2>
+      <div class="section-content">
+        <p>ユーザーは、いつでもアカウント削除を申請でき、サービス利用を終了できます。</p>
+        <p>当社は、本規約違反を理由に、予告なくユーザーのアカウントを削除し、サービス利用を終了させることができます。</p>
+        <p>解約後のデータ復旧はできません。重要なデータは事前にダウンロードしてください。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">規約の変更</h2>
+      <div class="section-content">
+        <p>当社は、利用者に通知することなく、本規約を変更する場合があります。ユーザーが本サービスを継続利用することにより、変更後の規約に同意したものとみなされます。</p>
+        <p><strong>最終更新：</strong> <span id="lastUpdate">2025年1月</span></p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">AI × チャート</div>
+    <div class="foot-links">
+      <a href="index-5.html">Home</a>
+      <a href="terms.html">利用規約</a>
+      <a href="tokushoho.html">特商法</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="mailto:contact@aichart.jp">お問い合わせ</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══ CURSOR ══ */
+const dot=document.getElementById('cursorDot'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function raf(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(raf)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(201,168,76,.7)';dot.style.width='3px';dot.style.height='3px'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(201,168,76,.45)';dot.style.width='6px';dot.style.height='6px'});
+});
+
+/* ══ SMOOTH SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const el=document.querySelector(id);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'})});
+});
+
+/* ══ UPDATE YEAR ══ */
+document.getElementById('lastUpdate').textContent=new Date().getFullYear()+'年'+String(new Date().getMonth()+1).padStart(2,'0')+'月';
+</script>
+</body>
+</html>

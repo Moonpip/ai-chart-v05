@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダッシュボード｜AI×チャート</title>
+  <meta name="description" content="AI×チャートのユーザーダッシュボード。AI分析、プラン確認、アカウント管理が可能。">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --accent: #c8f461;
+      --text: #f0f0f0;
+      --muted: #6b6b75;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.4rem 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--muted); color: var(--text); }
+
+    /* MAIN */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .greeting {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .greeting span { color: var(--accent); }
+
+    .sub-greeting {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* CARDS GRID */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #3a3a45; }
+
+    .card-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .card-value.accent { color: var(--accent); }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .plan-free       { background: rgba(107,107,117,0.2); color: var(--muted); border: 1px solid #333; }
+    .plan-premium    { background: rgba(200,244,97,0.12); color: var(--accent); border: 1px solid rgba(200,244,97,0.3); }
+    .plan-enterprise { background: rgba(147,112,219,0.12); color: #b39ddb; border: 1px solid rgba(147,112,219,0.3); }
+
+    /* ADMIN SECTION */
+    .admin-card {
+      background: linear-gradient(135deg, rgba(200,244,97,0.07) 0%, transparent 60%);
+      border: 1px solid rgba(200,244,97,0.2);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .admin-card-text h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .admin-card-text p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .btn-admin {
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .btn-admin:hover { opacity: 0.85; }
+
+    /* ACCOUNT INFO */
+    .info-section {
+      margin-top: 2rem;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-key { color: var(--muted); }
+    .info-val { color: var(--text); font-weight: 500; }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .alert.error   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: #ff6b6b; }
+    .alert.show    { display: block; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">AI×チャート</div>
+    <div class="nav-actions">
+      <a href="ホームページ5-1.html" class="nav-link">トップ</a>
+      <a href="ホームページ5-1.html#pricing" class="nav-link">料金</a>
+      <a href="chat.html" class="nav-link">サポート</a>
+      <a href="admin.html" class="nav-link" id="adminLink" style="display:none;">管理画面</a>
+      <a href="/logout" class="btn-logout">ログアウト</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="alert error" id="alertBox"></div>
+
+    <div class="greeting">おかえりなさい、<span id="userEmail">...</span></div>
+    <div class="sub-greeting">今日もよろしくお願いします。</div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">現在のプラン</div>
+        <div class="card-value">
+          <span class="plan-badge" id="planBadge">...</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">アカウント登録日</div>
+        <div class="card-value" id="createdAt" style="font-size:1rem; padding-top:0.3rem;">...</div>
+      </div>
+      <div class="card">
+        <div class="card-label">権限</div>
+        <div class="card-value" id="roleValue">...</div>
+      </div>
+    </div>
+
+    <div class="admin-card" id="adminSection" style="display:none;">
+      <div class="admin-card-text">
+        <h3>管理者パネル</h3>
+        <p>ユーザーの管理・プラン変更ができます</p>
+      </div>
+      <a href="admin.html" class="btn-admin">管理画面へ →</a>
+    </div>
+
+    <div class="info-section">
+      <div class="section-title">アカウント情報</div>
+      <div class="info-row">
+        <span class="info-key">メールアドレス</span>
+        <span class="info-val" id="emailFull">...</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">ユーザーID</span>
+        <span class="info-val" id="userId">...</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    if (params.get('error') === 'forbidden') {
+      const box = document.getElementById('alertBox');
+      box.textContent = '管理者権限がありません';
+      box.classList.add('show');
+    }
+
+    fetch('/api/me')
+      .then(r => { if (!r.ok) location.href = 'login-1.html'; return r.json(); })
+      .then(u => {
+        const email = u.email || '';
+        const name = email.split('@')[0];
+
+        document.getElementById('userEmail').textContent = name;
+        document.getElementById('emailFull').textContent = email;
+        document.getElementById('userId').textContent = '#' + u.id;
+
+        // Plan badge
+        const badge = document.getElementById('planBadge');
+        badge.textContent = u.plan;
+        badge.className = 'plan-badge plan-' + u.plan;
+
+        // Created date
+        const d = new Date(u.createdAt);
+        document.getElementById('createdAt').textContent =
+          isNaN(d) ? u.createdAt : d.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Role
+        document.getElementById('roleValue').textContent = u.isAdmin ? '管理者' : '一般ユーザー';
+
+        // Admin section
+        if (u.isAdmin) {
+          document.getElementById('adminSection').style.display = 'flex';
+          document.getElementById('adminLink').style.display = 'inline';
+        }
+      })
+      .catch(() => location.href = 'login-1.html');
+  </script>
+</body>
+</html>

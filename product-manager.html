@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="データセット販売管理画面"/>
+  <title>商品管理 | AI×チャート Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:#080806;
+  color:#e8e0cc;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+}
+a,button{text-decoration:none;border:none;font-family:inherit}
+
+:root{
+  --amber:#c9a84c;
+  --amber2:#e8cc80;
+  --smoke:rgba(232,224,204,.55);
+  --fog:rgba(232,224,204,.28);
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  background:rgba(22,20,16,.6);
+  border-bottom:1px solid rgba(201,168,76,.1);
+  padding:20px 0;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px;
+}
+
+.header-content{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.04em;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--amber);
+}
+
+.header-right{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+
+.user-info{
+  font-size:12px;
+  color:var(--fog);
+}
+
+.logout-btn{
+  background:transparent;
+  border:1px solid rgba(201,168,76,.4);
+  color:#e8e0cc;
+  padding:8px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  transition:all .3s;
+}
+
+.logout-btn:hover{
+  border-color:var(--amber);
+  background:rgba(201,168,76,.1);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+.main{
+  padding:40px 0;
+}
+
+.page-title{
+  font-size:32px;
+  color:var(--amber2);
+  margin-bottom:8px;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.page-desc{
+  font-size:13px;
+  color:var(--fog);
+  margin-bottom:40px;
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:32px;
+  border-bottom:1px solid rgba(201,168,76,.1);
+}
+
+.tab-btn{
+  background:transparent;
+  color:var(--fog);
+  padding:12px 20px;
+  border-bottom:2px solid transparent;
+  cursor:pointer;
+  font-size:14px;
+  transition:all .3s;
+}
+
+.tab-btn:hover{
+  color:var(--amber);
+}
+
+.tab-btn.active{
+  color:var(--amber2);
+  border-bottom-color:var(--amber);
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCT EDITOR
+═══════════════════════════════════════════ */
+.editor-container{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+  margin-bottom:40px;
+}
+
+.editor-section{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:12px;
+  padding:24px;
+}
+
+.editor-title{
+  font-size:16px;
+  color:var(--amber2);
+  margin-bottom:20px;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.form-group{
+  margin-bottom:16px;
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group label{
+  font-size:12px;
+  color:var(--amber);
+  margin-bottom:6px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-weight:500;
+}
+
+.form-group input,
+.form-group textarea{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:6px;
+  padding:10px 12px;
+  color:#e8e0cc;
+  font-size:13px;
+  font-family:inherit;
+  transition:all .3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+  outline:none;
+  border-color:var(--amber);
+  background:rgba(201,168,76,.08);
+}
+
+.form-group textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+/* ═══════════════════════════════════════════
+   SPECS EDITOR
+═══════════════════════════════════════════ */
+.spec-input{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.spec-input input{
+  font-size:12px !important;
+  padding:8px 10px !important;
+}
+
+.remove-spec-btn{
+  background:rgba(224,92,92,.2);
+  border:1px solid rgba(224,92,92,.4);
+  color:#e8e0cc;
+  padding:6px 12px;
+  border-radius:4px;
+  font-size:11px;
+  cursor:pointer;
+  transition:all .3s;
+}
+
+.remove-spec-btn:hover{
+  background:rgba(224,92,92,.3);
+}
+
+.add-spec-btn{
+  background:transparent;
+  border:1px solid rgba(201,168,76,.3);
+  color:var(--amber);
+  padding:8px 16px;
+  border-radius:6px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .3s;
+  margin-top:8px;
+}
+
+.add-spec-btn:hover{
+  border-color:var(--amber);
+  background:rgba(201,168,76,.1);
+}
+
+/* ═══════════════════════════════════════════
+   BUTTON GROUP
+═══════════════════════════════════════════ */
+.button-group{
+  display:flex;
+  gap:12px;
+}
+
+.btn{
+  padding:12px 32px;
+  border-radius:8px;
+  font-size:14px;
+  cursor:pointer;
+  transition:all .3s;
+  font-weight:500;
+}
+
+.btn-primary{
+  background:var(--amber);
+  color:#080806;
+  border:none;
+}
+
+.btn-primary:hover{
+  background:var(--amber2);
+  transform:scale(1.02);
+}
+
+.btn-secondary{
+  background:transparent;
+  border:1px solid rgba(201,168,76,.4);
+  color:#e8e0cc;
+}
+
+.btn-secondary:hover{
+  border-color:var(--amber);
+  background:rgba(201,168,76,.1);
+}
+
+/* ═══════════════════════════════════════════
+   PREVIEW
+═══════════════════════════════════════════ */
+.preview-box{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:12px;
+  padding:24px;
+  margin-bottom:24px;
+}
+
+.preview-title{
+  font-size:14px;
+  color:var(--amber);
+  margin-bottom:16px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.preview-content{
+  background:rgba(22,20,16,.6);
+  border-radius:8px;
+  padding:16px;
+  font-size:13px;
+  color:var(--smoke);
+  line-height:1.6;
+  max-height:300px;
+  overflow-y:auto;
+}
+
+/* ═══════════════════════════════════════════
+   MESSAGE
+═══════════════════════════════════════════ */
+.message{
+  padding:12px 16px;
+  border-radius:6px;
+  margin-bottom:16px;
+  font-size:13px;
+  display:none;
+}
+
+.message.show{
+  display:block;
+}
+
+.message.success{
+  background:rgba(76,187,138,.2);
+  color:#4cbb8a;
+  border:1px solid rgba(76,187,138,.4);
+}
+
+.message.error{
+  background:rgba(224,92,92,.2);
+  color:#e05c5c;
+  border:1px solid rgba(224,92,92,.4);
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCT LIST
+═══════════════════════════════════════════ */
+.product-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:16px;
+}
+
+.product-item{
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:12px;
+  padding:16px;
+  cursor:pointer;
+  transition:all .3s;
+}
+
+.product-item:hover{
+  border-color:var(--amber);
+  background:rgba(201,168,76,.08);
+}
+
+.product-item-label{
+  font-size:11px;
+  color:var(--amber);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.product-item-title{
+  font-size:14px;
+  color:var(--amber2);
+  margin-bottom:4px;
+  font-weight:500;
+}
+
+.product-item-price{
+  font-size:13px;
+  color:var(--fog);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:968px){
+  .editor-container{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:640px){
+  .wrap{
+    padding:0 16px;
+  }
+  
+  .header-right{
+    flex-direction:column;
+    gap:8px;
+  }
+}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <div class="logo">AI × チャート Admin</div>
+      <div class="header-right">
+        <div class="user-info">管理者: Admin</div>
+        <button class="logout-btn" onclick="goBack()">← ダッシュボードに戻る</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="wrap">
+  <div class="main">
+    <h1 class="page-title">データセット商品管理</h1>
+    <p class="page-desc">商品情報を編集・管理します。変更後は「保存」ボタンで反映されます。</p>
+    
+    <!-- MESSAGE -->
+    <div class="message" id="message"></div>
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchView('products')">📋 商品一覧</button>
+      <button class="tab-btn" onclick="switchView('editor')">✏️ 商品編集</button>
+    </div>
+    
+    <!-- VIEW: PRODUCTS LIST -->
+    <div id="products-view" style="display:block;">
+      <div class="product-list" id="productList"></div>
+    </div>
+    
+    <!-- VIEW: EDITOR -->
+    <div id="editor-view" style="display:none;">
+      <div class="editor-container">
+        
+        <!-- LEFT: FORM -->
+        <div>
+          <div class="editor-section">
+            <div class="editor-title">商品情報</div>
+            
+            <div class="form-group">
+              <label>Product ID</label>
+              <input type="text" id="productId" readonly style="background:rgba(201,168,76,.03);cursor:not-allowed;">
+            </div>
+            
+            <div class="form-group">
+              <label>商品名</label>
+              <input type="text" id="productTitle" placeholder="商品の名前">
+            </div>
+            
+            <div class="form-group">
+              <label>短い説明</label>
+              <textarea id="productDesc" placeholder="商品の短い説明"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>価格</label>
+              <input type="text" id="productPrice" placeholder="¥9,800">
+            </div>
+            
+            <div class="form-group">
+              <label>アイコン（絵文字）</label>
+              <input type="text" id="productIcon" placeholder="📊" maxlength="2">
+            </div>
+            
+            <div class="editor-section" style="margin-top:20px;">
+              <div class="editor-title">スペック (仕様)</div>
+              <div id="specsEditor"></div>
+              <button class="add-spec-btn" onclick="addSpec()">+ スペック追加</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- RIGHT: DETAILS & PREVIEW -->
+        <div>
+          <div class="editor-section">
+            <div class="editor-title">詳しい説明（HTML対応）</div>
+            
+            <div class="form-group">
+              <label>詳しい説明テキスト</label>
+              <textarea id="productFullDesc" placeholder="詳しい説明を入力してください。HTMLタグも使用可能。" style="min-height:300px;"></textarea>
+            </div>
+          </div>
+          
+          <div class="preview-box">
+            <div class="preview-title">プレビュー</div>
+            <div class="preview-content" id="preview"></div>
+          </div>
+          
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="saveProduct()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="resetForm()">🔄 リセット</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ PRODUCTS DATA (Persistent) ══ */
+let productsData = JSON.parse(localStorage.getItem('productsData')) || [
+  {
+    id: 1,
+    title: "日本全株価データセット",
+    description: "6000銘柄の40年分の日本株価データ。OHLCV形式。",
+    price: "¥9,800",
+    icon: "📊",
+    specs: { "銘柄数": "6,000+", "期間": "40年", "形式": "CSV/Excel" },
+    fullDescription: `<h2>日本全株価データセット 詳細</h2><p>日本全域の6,000銘柄以上の40年分の株価データを完全網羅したデータセットです。</p>`
+  },
+  {
+    id: 2,
+    title: "テクニカル指標付きデータセット",
+    description: "MA, MACD, RSI などのインジケーター計算済みデータ。すぐに分析可能。",
+    price: "¥14,800",
+    icon: "📈",
+    specs: { "銘柄数": "2,000+", "指標数": "15+", "形式": "JSON/CSV" },
+    fullDescription: `<h2>テクニカル指標付きデータセット 詳細</h2><p>2,000銘柄以上について、15種類以上のテクニカル指標があらかじめ計算されたデータセットです。</p>`
+  },
+  {
+    id: 3,
+    title: "セクター別分類データ",
+    description: "33業種別に分類・集計された日本株データ。業種分析向け。",
+    price: "¥11,800",
+    icon: "🔥",
+    specs: { "業種数": "33", "期間": "30年", "形式": "SQL/CSV" },
+    fullDescription: `<h2>セクター別分類データ 詳細</h2><p>日本株を33業種に分類し、業種ごとにセクター指標を集計したデータセットです。</p>`
+  },
+  {
+    id: 4,
+    title: "トレード分析用カスタムデータ",
+    description: "出来高、買上下分離、資金流などを含めたプロ仕様のデータセット。",
+    price: "¥19,800",
+    icon: "⚡",
+    specs: { "銘柄数": "1,500+", "粒度": "1分足対応", "形式": "HDF5/Parquet" },
+    fullDescription: `<h2>トレード分析用カスタムデータ 詳細</h2><p>プロのトレーダー向けに、出来高分析や買上下分離など高度なデータを含むデータセットです。</p>`
+  },
+  {
+    id: 5,
+    title: "機械学習用データセット",
+    description: "正規化・特徴抽出済みの機械学習向けデータ。即座にモデル学習可能。",
+    price: "¥24,800",
+    icon: "🤖",
+    specs: { "サンプル": "1M+", "特徴": "100+", "形式": "NumPy/TensorFlow" },
+    fullDescription: `<h2>機械学習用データセット 詳細</h2><p>100種類以上の特徴量があらかじめ抽出・正規化されたデータセットです。</p>`
+  },
+  {
+    id: 6,
+    title: "全データ統合パッケージ",
+    description: "上記すべてのデータセットを含む。企業向け・研究向けの完全パッケージ。",
+    price: "¥49,800",
+    icon: "💎",
+    specs: { "内容": "全5種類", "更新": "毎日", "サポート": "含む" },
+    fullDescription: `<h2>全データ統合パッケージ 詳細</h2><p>上記5つのデータセット全てを含む、完全なマスターパッケージです。</p>`
+  }
+];
+
+let currentProductId = null;
+
+/* ══ RENDER PRODUCTS LIST ══ */
+function renderProductList() {
+  const list = document.getElementById('productList');
+  list.innerHTML = productsData.map(p => `
+    <div class="product-item" onclick="editProduct(${p.id})">
+      <div class="product-item-label">ID: ${p.id}</div>
+      <div class="product-item-title">${p.title}</div>
+      <div class="product-item-price">${p.price}</div>
+    </div>
+  `).join('');
+}
+
+/* ══ SWITCH VIEW ══ */
+function switchView(view) {
+  document.getElementById('products-view').style.display = view === 'products' ? 'block' : 'none';
+  document.getElementById('editor-view').style.display = view === 'editor' ? 'block' : 'none';
+  
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* ══ EDIT PRODUCT ══ */
+function editProduct(id) {
+  const product = productsData.find(p => p.id === id);
+  if (!product) return;
+  
+  currentProductId = id;
+  
+  // フォームを埋める
+  document.getElementById('productId').value = `ID: ${product.id}`;
+  document.getElementById('productTitle').value = product.title;
+  document.getElementById('productDesc').value = product.description;
+  document.getElementById('productPrice').value = product.price;
+  document.getElementById('productIcon').value = product.icon;
+  document.getElementById('productFullDesc').value = product.fullDescription;
+  
+  // スペック編集エリアを埋める
+  renderSpecsEditor(product.specs);
+  
+  // エディタビューに切り替え
+  document.getElementById('products-view').style.display = 'none';
+  document.getElementById('editor-view').style.display = 'block';
+  document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+  document.querySelectorAll('.tab-btn')[1].classList.add('active');
+  
+  updatePreview();
+}
+
+/* ══ SPECS EDITOR ══ */
+function renderSpecsEditor(specs) {
+  const editor = document.getElementById('specsEditor');
+  editor.innerHTML = Object.entries(specs).map(([key, value], idx) => `
+    <div class="spec-input">
+      <input type="text" value="${key}" placeholder="ラベル" onchange="updatePreview()">
+      <input type="text" value="${value}" placeholder="値" onchange="updatePreview()">
+    </div>
+  `).join('') + `<div class="spec-input"><button class="remove-spec-btn" onclick="removeLastSpec()">削除</button></div>`;
+}
+
+function addSpec() {
+  const editor = document.getElementById('specsEditor');
+  const input = document.createElement('div');
+  input.className = 'spec-input';
+  input.innerHTML = `
+    <input type="text" placeholder="ラベル" onchange="updatePreview()">
+    <input type="text" placeholder="値" onchange="updatePreview()">
+  `;
+  editor.insertBefore(input, editor.lastChild);
+  updatePreview();
+}
+
+function removeLastSpec() {
+  const editor = document.getElementById('specsEditor');
+  if (editor.children.length > 2) {
+    editor.removeChild(editor.children[editor.children.length - 2]);
+    updatePreview();
+  }
+}
+
+/* ══ UPDATE PREVIEW ══ */
+function updatePreview() {
+  const title = document.getElementById('productTitle').value;
+  const price = document.getElementById('productPrice').value;
+  const specs = getSpecs();
+  
+  const specsHtml = Object.entries(specs)
+    .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+    .join('');
+  
+  const preview = `
+    <h3>${title}</h3>
+    <p style="margin-top:10px;"><strong>${price}</strong></p>
+    <div style="margin-top:10px;">${specsHtml}</div>
+  `;
+  
+  document.getElementById('preview').innerHTML = preview;
+}
+
+function getSpecs() {
+  const inputs = document.querySelectorAll('#specsEditor .spec-input input');
+  const specs = {};
+  for (let i = 0; i < inputs.length - 2; i += 2) {
+    const key = inputs[i].value;
+    const val = inputs[i + 1].value;
+    if (key && val) specs[key] = val;
+  }
+  return specs;
+}
+
+/* ══ SAVE PRODUCT ══ */
+function saveProduct() {
+  if (!currentProductId) {
+    showMessage('商品を選択してください', 'error');
+    return;
+  }
+  
+  const product = productsData.find(p => p.id === currentProductId);
+  
+  product.title = document.getElementById('productTitle').value;
+  product.description = document.getElementById('productDesc').value;
+  product.price = document.getElementById('productPrice').value;
+  product.icon = document.getElementById('productIcon').value;
+  product.specs = getSpecs();
+  product.fullDescription = document.getElementById('productFullDesc').value;
+  
+  // LocalStorageに保存
+  localStorage.setItem('productsData', JSON.stringify(productsData));
+  
+  showMessage(`✓ 商品 ID ${currentProductId} を保存しました！`, 'success');
+  renderProductList();
+}
+
+/* ══ RESET FORM ══ */
+function resetForm() {
+  if (currentProductId) {
+    editProduct(currentProductId);
+    showMessage('フォームをリセットしました', 'success');
+  }
+}
+
+/* ══ MESSAGE ══ */
+function showMessage(text, type) {
+  const msg = document.getElementById('message');
+  msg.textContent = text;
+  msg.className = `message show ${type}`;
+  setTimeout(() => msg.classList.remove('show'), 3000);
+}
+
+/* ══ GO BACK ══ */
+function goBack() {
+  window.location.href = 'admin-dashboard.html';
+}
+
+/* ══ INIT ══ */
+renderProductList();
+</script>
+</body>
+</html>

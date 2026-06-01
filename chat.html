@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIサポート｜AI×チャート</title>
+  <meta name="description" content="AI×チャートのサポートページ。チャート分析・使い方・機能について質問できます。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="chat-page">
+  <div class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="ホームページ5-1.html">
+        <img class="logo" src="app_icon.png" alt="AI×チャート ロゴ">
+        <div class="brand-title">
+          <div class="name">AI×チャート</div>
+          <div class="tag">40年データ × AI分析</div>
+        </div>
+      </a>
+      <nav class="main-nav">
+        <a href="ホームページ5-1.html">トップ</a>
+        <a href="ホームページ5-1.html#pricing">料金</a>
+        <a href="ai-chart-guide.html">ガイド</a>
+        <a href="dashboard.html">ダッシュボード</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="chat-header">
+    <div class="container">
+      <h1>🤖 AIサポートチャット</h1>
+      <p style="margin:6px 0 0;color:rgba(255,255,255,.6);font-size:13px;">
+        AI×チャートの使い方・機能・株式分析に関するご質問にお返事いたします
+      </p>
+    </div>
+  </header>
+
+  <main class="chat-main">
+    <div class="container">
+      <div class="chat-card">
+        <div class="chat-messages" id="chatMessages">
+          <!-- 初期メッセージ -->
+          <div class="chat-msg chat-msg-ai">
+            <div class="chat-msg-inner">
+              こんにちは！AI×チャートのサポートチームです 👋<br><br>
+              チャートの見方、AI分析機能の使い方、プランについてなど、お気軽にご質問ください。<br><br>
+              例）<br>
+              ・「RSIとはどう使うの？」<br>
+              ・「AIの上昇確率はどう計算されますか？」<br>
+              ・「PROプランと無料プランの違いは？」
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-wrap">
+          <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください..." maxlength="500"
+            autocomplete="off">
+          <button type="button" id="chatSend" class="chat-send-btn">送信</button>
+        </div>
+      </div>
+
+      <p style="margin-top:12px;text-align:center;font-size:12px;color:rgba(255,255,255,.35);">
+        ※ このチャットはお問い合わせフォームです。営業時間内にスタッフがお返事いたします。
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div>© <span id="y"></span> AI×チャート. All rights reserved.</div>
+      <div class="small-links">
+        <a href="ホームページ5-1.html">トップ</a>
+        <a href="ai-chart-guide.html">ガイド</a>
+        <a href="ホームページ5-1.html#pricing">料金</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+
+    (function () {
+      const messagesEl = document.getElementById('chatMessages');
+      const inputEl = document.getElementById('chatInput');
+      const sendBtn = document.getElementById('chatSend');
+
+      function addMessage(text, isUser) {
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + (isUser ? 'chat-msg-user' : 'chat-msg-ai');
+        const inner = document.createElement('div');
+        inner.className = 'chat-msg-inner';
+        inner.textContent = text;
+        div.appendChild(inner);
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return inner;
+      }
+
+      async function loadTickets() {
+        try {
+          const res = await fetch('/api/support/my');
+          const tickets = await res.json();
+
+          // 最初のメッセージ以外をクリア
+          const allMsgs = messagesEl.querySelectorAll('.chat-msg');
+          if (allMsgs.length > 1) {
+            for (let i = 1; i < allMsgs.length; i++) {
+              allMsgs[i].remove();
+            }
+          }
+
+          // チケット履歴を追加
+          tickets.forEach(t => {
+            addMessage(`[${new Date(t.createdAt).toLocaleString('ja-JP')}]\n${t.message}`, true);
+            if (t.reply) {
+              addMessage(`[${new Date(t.updatedAt).toLocaleString('ja-JP')}]\n${t.reply}`, false);
+            }
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function send() {
+        const text = (inputEl.value || '').trim();
+        if (!text) return;
+
+        addMessage(text, true);
+        inputEl.value = '';
+        sendBtn.disabled = true;
+        inputEl.disabled = true;
+
+        try {
+          const response = await fetch('/api/support', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+          });
+
+          if (response.ok) {
+            addMessage('お問い合わせを送信いたしました。ご返信までお待ちください。', false);
+            loadTickets();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        inputEl.focus();
+      }
+
+      sendBtn.addEventListener('click', send);
+      inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+      });
+
+      // 初期読込
+      loadTickets();
+      // 5秒ごとにリロード
+      setInterval(loadTickets, 15000);
+    })();
+  </script>
+</body>
+
+</html>

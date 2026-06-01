@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新規登録</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --accent: #c8f461;
+      --accent-dark: #a3cc45;
+      --text: #f0f0f0;
+      --muted: #6b6b75;
+      --error: #ff6b6b;
+      --success: #6bffb8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      bottom: -40%;
+      right: -20%;
+      width: 70vw;
+      height: 70vw;
+      background: radial-gradient(ellipse, rgba(200, 244, 97, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+    .alert.error   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--error); }
+    .alert.show    { display: block; }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: -1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    button {
+      width: 100%;
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover  { background: var(--accent-dark); }
+    button:active { transform: scale(0.98); }
+
+    .plan-note {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(200,244,97,0.06);
+      border: 1px solid rgba(200,244,97,0.15);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .plan-note span { color: var(--accent); font-weight: 500; }
+
+    .footer-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .footer-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .footer-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AppName</div>
+    <div class="subtitle">新しいアカウントを作成</div>
+
+    <div class="alert error" id="alertBox"></div>
+
+    <div class="plan-note">
+      登録後のプランは <span>Free</span> です。管理者がアップグレードできます。
+    </div>
+
+    <form method="POST" action="/signup">
+      <label>メールアドレス</label>
+      <input type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+
+      <label>パスワード</label>
+      <input type="password" name="password" placeholder="6文字以上" required autocomplete="new-password">
+      <div class="hint">6文字以上で設定してください</div>
+
+      <button type="submit">アカウント作成</button>
+    </form>
+
+    <div class="footer-link">
+      すでにアカウントをお持ちの方は <a href="/login.html">ログイン</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const errorMap = {
+      missing: 'メールアドレスとパスワードを入力してください',
+      short:   'パスワードは6文字以上にしてください',
+      exists:  'このメールアドレスは既に登録されています',
+    };
+    const err = params.get('error');
+    if (err && errorMap[err]) {
+      const box = document.getElementById('alertBox');
+      box.textContent = errorMap[err];
+      box.classList.add('show');
+    }
+  </script>
+</body>
+</html>

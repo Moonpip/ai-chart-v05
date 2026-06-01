@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャートプライバシーポリシー"/>
+  <title>プライバシーポリシー | AI×チャート｜40年データ×AI分析の株価チャート</title>
+  <meta property="og:title" content="プライバシーポリシー | AI×チャート"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* ═══════════════════════════════════════════
+   RESET & FOUNDATIONS
+═══════════════════════════════════════════ */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth;font-size:16px}
+body{
+  background:#080806;
+  color:#e8e0cc;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%}
+button{font-family:inherit;cursor:none}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+.cursor-dot{
+  position:fixed;width:6px;height:6px;
+  background:#c9a84c;border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+  mix-blend-mode:difference;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(201,168,76,.45);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .35s cubic-bezier(.23,1,.32,1),
+             height .35s cubic-bezier(.23,1,.32,1),
+             opacity .35s,border-color .35s;
+}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}button{cursor:pointer}}
+
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root{
+  --ink:    #080806;
+  --ink1:   #0f0e0a;
+  --ink2:   #161410;
+  --amber:  #c9a84c;
+  --amber2: #e8cc80;
+  --amber3: #f5e4a8;
+  --smoke:  rgba(232,224,204,.55);
+  --fog:    rgba(232,224,204,.28);
+  --ghost:  rgba(232,224,204,.10);
+  --r:12px;
+  --gap:clamp(16px,3vw,32px);
+}
+
+/* ═══════════════════════════════════════════
+   NOISE GRAIN OVERLAY
+═══════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.mono {font-family:'JetBrains Mono',monospace}
+
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;letter-spacing:.01em;line-height:1.15}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:900px;margin:0 auto;padding:0 var(--gap);position:relative;z-index:2}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  border-bottom:1px solid rgba(201,168,76,.14);
+  background:linear-gradient(180deg,rgba(8,8,6,.95) 0%,rgba(8,8,6,.85) 100%);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+
+.header-content{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 0;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-decoration:none;
+  transition:color .3s;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.logo:hover{color:var(--amber2)}
+
+.header-links{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+.header-links a{
+  font-size:13px;
+  letter-spacing:.02em;
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+}
+
+.header-links a:hover{color:var(--amber)}
+
+@media(max-width:640px){
+  .header-links{gap:12px;font-size:12px}
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TITLE SECTION
+═══════════════════════════════════════════ */
+.page-title-section{
+  padding:60px 0 48px 0;
+  text-align:center;
+  animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.page-title-section h1{
+  font-size:clamp(32px,8vw,56px);
+  margin-bottom:16px;
+  color:var(--amber2);
+  letter-spacing:.02em;
+}
+
+.page-title-section p{
+  font-size:14px;
+  color:var(--fog);
+  letter-spacing:.01em;
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT SECTIONS
+═══════════════════════════════════════════ */
+.content-wrapper{
+  padding:40px 0;
+}
+
+.content-section{
+  margin-bottom:56px;
+  animation:slideIn .8s ease backwards;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.content-section:nth-child(1){animation-delay:.1s}
+.content-section:nth-child(2){animation-delay:.2s}
+.content-section:nth-child(3){animation-delay:.3s}
+.content-section:nth-child(4){animation-delay:.4s}
+.content-section:nth-child(5){animation-delay:.5s}
+.content-section:nth-child(6){animation-delay:.6s}
+
+.section-title{
+  font-size:24px;
+  color:var(--amber2);
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(201,168,76,.2);
+}
+
+.section-content{
+  line-height:1.8;
+  font-size:15px;
+  color:var(--smoke);
+}
+
+.section-content p{
+  margin-bottom:16px;
+}
+
+.section-content ul,
+.section-content ol{
+  margin:16px 0 16px 24px;
+}
+
+.section-content li{
+  margin-bottom:10px;
+  line-height:1.8;
+}
+
+.section-content strong{
+  color:var(--amber2);
+  font-weight:500;
+}
+
+.highlight-box{
+  background:rgba(201,168,76,.08);
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:8px;
+  padding:20px;
+  margin:24px 0;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--smoke);
+}
+
+.highlight-box strong{
+  color:var(--amber2);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid rgba(201,168,76,.14);
+  padding:48px 0 24px 0;
+  background:rgba(8,8,6,.5);
+  margin-top:80px;
+}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:24px;
+  font-size:12px;
+  color:var(--fog);
+}
+
+.foot-brand{
+  font-size:16px;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--amber);
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+.foot-links{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.foot-links a{
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.foot-links a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:768px){
+  .foot{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:640px){
+  .page-title-section{padding:40px 0 32px 0}
+  .section-title{font-size:20px}
+}
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="index-5.html" class="logo serif">AI × チャート</a>
+      <nav class="header-links">
+        <a href="index-5.html#features">Features</a>
+        <a href="index-5.html#pricing">Pricing</a>
+        <a href="terms.html">利用規約</a>
+        <a href="tokushoho.html">特商法</a>
+        <a href="privacy.html">プライバシー</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+  <div class="wrap">
+    <h1>プライバシーポリシー</h1>
+    <p>Privacy Policy</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div class="wrap">
+
+    <section class="content-section">
+      <h2 class="section-title">1. はじめに</h2>
+      <div class="section-content">
+        <p>AI×チャート運営事務局（以下「当社」）は、ユーザーの個人情報を大切に取扱い、その保護と安全を最優先にしています。本プライバシーポリシーは、本サービスのご利用に際して、当社が収集する個人情報の取扱いについて説明するものです。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">2. 収集する個人情報</h2>
+      <div class="section-content">
+        <p>当社は、以下の個人情報を収集します：</p>
+        <ul>
+          <li><strong>登録情報：</strong> メールアドレス、パスワード、氏名、電話番号</li>
+          <li><strong>支払情報：</strong> クレジットカード情報（カード番号下4桁、有効期限）、請求先住所</li>
+          <li><strong>利用情報：</strong> ログイン日時、アクセス IP アドレス、利用時間、検索キーワード</li>
+          <li><strong>デバイス情報：</strong> ブラウザ種類、OS、デバイス識別子</li>
+          <li><strong>その他：</strong> お問い合わせ内容、フィードバック、アンケート回答</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>クレジットカード情報の取扱い：</strong> クレジットカード情報は、当社が直接保管せず、PCI DSS に準拠した決済代行業者を通じてのみ処理されます。
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">3. 個人情報の利用目的</h2>
+      <div class="section-content">
+        <p>当社は、収集した個人情報を以下の目的でのみ使用します：</p>
+        <ul>
+          <li>サービスの提供・運用・改善</li>
+          <li>ユーザーサポート・技術サポート</li>
+          <li>料金の請求・決済処理</li>
+          <li>ユーザー認証・アカウント管理</li>
+          <li>不正使用の防止・検出</li>
+          <li>統計データの作成・分析（匿名化された情報）</li>
+          <li>法律上の義務を果たすため</li>
+          <li>セキュリティの維持・向上</li>
+          <li>お問い合わせへの対応</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">4. 個人情報の第三者提供</h2>
+      <div class="section-content">
+        <p>当社は、以下の場合を除き、個人情報を第三者に開示または提供いたしません：</p>
+        <ul>
+          <li>ユーザーの明示的な同意がある場合</li>
+          <li>法令に基づき、当社が提供義務を負う場合</li>
+          <li>業務の委託に必要な範囲で、信頼できるパートナー企業に提供する場合（支払処理、カスタマーサポートなど）</li>
+          <li>個人を特定できない形に加工（匿名化）した統計情報を提供する場合</li>
+        </ul>
+        <div class="highlight-box">
+          <strong>業務委託先：</strong> 支払処理（Stripe, Inc.）、カスタマーサポート（当社スタッフのみ）、クラウド基盤（Amazon Web Services）などが含まれます。これらのパートナーは、個人情報保護契約の下で、適切に管理されています。
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">5. 個人情報の保護</h2>
+      <div class="section-content">
+        <p>当社は、個人情報を不正アクセス、改ざん、紛失から保護するため、以下のセキュリティ対策を実施しています：</p>
+        <ul>
+          <li><strong>暗号化：</strong> SSL/TLS を使用した通信の暗号化</li>
+          <li><strong>認証：</strong> パスワードの厳密な管理・ハッシュ化</li>
+          <li><strong>アクセス制御：</strong> 認可されたスタッフのみが個人情報にアクセス可能</li>
+          <li><strong>データベース保護：</strong> ファイアウォール・侵入防止システムの導入</li>
+          <li><strong>定期的な監査：</strong> セキュリティ脆弱性の定期的な検査</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">6. ユーザーの権利</h2>
+      <div class="section-content">
+        <p>ユーザーは、個人情報に関して、以下の権利を有します：</p>
+        <ul>
+          <li><strong>開示請求権：</strong> 当社が保有する自分の個人情報の開示を求める権利</li>
+          <li><strong>訂正権：</strong> 不正確な個人情報の訂正を求める権利</li>
+          <li><strong>削除権：</strong> 不要になった個人情報の削除を求める権利</li>
+          <li><strong>処理停止権：</strong> 個人情報の処理停止を求める権利</li>
+        </ul>
+        <p>これらのご請求は、以下のメールアドレスまでお問い合わせください：<strong><a href="mailto:contact@aichart.jp">contact@aichart.jp</a></strong></p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">7. Cookie とトラッキング</h2>
+      <div class="section-content">
+        <p><strong>Cookie の使用：</strong> 当社は、ユーザーの利便性向上のため、Cookie を使用しています。Cookie は、ユーザーのブラウザに保存される小さなテキストファイルで、次回のアクセス時に当社がユーザーを識別する際に利用されます。</p>
+        <ul>
+          <li><strong>必須 Cookie：</strong> ログイン認証、セッション管理（削除不可）</li>
+          <li><strong>分析 Cookie：</strong> Google Analytics を使用したアクセス分析</li>
+          <li><strong>機能性 Cookie：</strong> ユーザー設定の保存</li>
+        </ul>
+        <p>ユーザーは、ブラウザ設定で Cookie を無効にすることができますが、その場合、一部の機能が利用できなくなる可能性があります。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">8. 外部サービスとの連携</h2>
+      <div class="section-content">
+        <p>本サービスは、以下の外部サービスと連携しています：</p>
+        <ul>
+          <li><strong>Google Analytics：</strong> アクセス統計の記録・分析</li>
+          <li><strong>Stripe：</strong> クレジットカード決済処理</li>
+          <li><strong>AWS：</strong> クラウド基盤・データベース管理</li>
+        </ul>
+        <p>これらの外部サービスは、それぞれのプライバシーポリシーに従い、情報を処理しています。詳細はそれぞれのプライバシーポリシーをご確認ください。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">9. 個人情報の保有期間</h2>
+      <div class="section-content">
+        <p>当社は、個人情報を以下の期間保有します：</p>
+        <ul>
+          <li><strong>アクティブユーザー：</strong> サービス利用期間中、および利用終了後 1 年間</li>
+          <li><strong>非アクティブユーザー：</strong> 最終ログインから 2 年間</li>
+          <li><strong>支払い情報：</strong> 取引完了から 7 年間（税法で定められた期間）</li>
+        </ul>
+        <p>保有期間の終了後、当社は速やかに個人情報を削除またはマスキング（匿名化）します。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">10. 法令上の責務</h2>
+      <div class="section-content">
+        <p>当社は、以下の場合、個人情報を関係当局に提供することがあります：</p>
+        <ul>
+          <li>犯罪の予防・捜査・起訴・公訴維持のため</li>
+          <li>不正アクセス防止法など関連法令で規定される場合</li>
+          <li>法執行機関からの正式な請求がある場合</li>
+        </ul>
+        <p>ただし、これらの場合でも、法令で定められた範囲内でのみ提供します。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">11. 未成年者の個人情報</h2>
+      <div class="section-content">
+        <p>本サービスは 18 歳以上のユーザーを対象としています。当社は、18 歳未満のユーザーの個人情報を意図的に収集いたしません。</p>
+        <p>もし 18 歳未満のユーザー情報が登録されたことが判明した場合、当社はそれを削除します。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">12. プライバシーポリシーの変更</h2>
+      <div class="section-content">
+        <p>当社は、法令の変更やサービスの更新に伴い、本プライバシーポリシーを随時変更することがあります。変更内容は、本ページにて通知します。</p>
+        <p>重大な変更の場合は、メール通知またはサービス内の警告により事前に通知いたします。</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">13. お問い合わせ</h2>
+      <div class="section-content">
+        <p>個人情報に関するご質問、ご不安、ご請求は、以下の窓口までお気軽にお問い合わせください：</p>
+        <div class="highlight-box">
+          <strong>AI×チャート 個人情報保護窓口</strong><br>
+          メール：<a href="mailto:privacy@aichart.jp">privacy@aichart.jp</a><br>
+          電話：090-1234-5678<br>
+          営業時間：平日 10:00～18:00<br>
+          <br>
+          <strong>最終更新：</strong> <span id="policyUpdateDate">2025年1月</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">AI × チャート</div>
+    <div class="foot-links">
+      <a href="index-5.html">Home</a>
+      <a href="terms.html">利用規約</a>
+      <a href="tokushoho.html">特商法</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="mailto:contact@aichart.jp">お問い合わせ</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══ CURSOR ══ */
+const dot=document.getElementById('cursorDot'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function raf(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(raf)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(201,168,76,.7)';dot.style.width='3px';dot.style.height='3px'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(201,168,76,.45)';dot.style.width='6px';dot.style.height='6px'});
+});
+
+/* ══ SMOOTH SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const el=document.querySelector(id);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'})});
+});
+
+/* ══ UPDATE DATE ══ */
+document.getElementById('policyUpdateDate').textContent=new Date().getFullYear()+'年'+String(new Date().getMonth()+1).padStart(2,'0')+'月';
+</script>
+</body>
+</html>

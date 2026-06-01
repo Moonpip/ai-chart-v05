@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャート特定商取引法に基づく表示"/>
+  <title>特定商取引法に基づく表示 | AI×チャート</title>
+  <meta property="og:title" content="特定商取引法に基づく表示 | AI×チャート"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+/* ═══════════════════════════════════════════
+   RESET & FOUNDATIONS
+═══════════════════════════════════════════ */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth;font-size:16px}
+body{
+  background:#080806;
+  color:#e8e0cc;
+  font-family:'Noto Sans JP',system-ui,sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
+a{color:inherit;text-decoration:none}
+img,video{display:block;max-width:100%}
+button{font-family:inherit;cursor:none}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+.cursor-dot{
+  position:fixed;width:6px;height:6px;
+  background:#c9a84c;border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+  mix-blend-mode:difference;
+}
+.cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(201,168,76,.45);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .35s cubic-bezier(.23,1,.32,1),
+             height .35s cubic-bezier(.23,1,.32,1),
+             opacity .35s,border-color .35s;
+}
+@media(pointer:coarse){.cursor-dot,.cursor-ring{display:none}body{cursor:auto}button{cursor:pointer}}
+
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root{
+  --ink:    #080806;
+  --ink1:   #0f0e0a;
+  --ink2:   #161410;
+  --amber:  #c9a84c;
+  --amber2: #e8cc80;
+  --amber3: #f5e4a8;
+  --smoke:  rgba(232,224,204,.55);
+  --fog:    rgba(232,224,204,.28);
+  --ghost:  rgba(232,224,204,.10);
+  --r:12px;
+  --gap:clamp(16px,3vw,32px);
+}
+
+/* ═══════════════════════════════════════════
+   NOISE GRAIN OVERLAY
+═══════════════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.mono {font-family:'JetBrains Mono',monospace}
+
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;letter-spacing:.01em;line-height:1.15}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.wrap{max-width:900px;margin:0 auto;padding:0 var(--gap);position:relative;z-index:2}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{
+  border-bottom:1px solid rgba(201,168,76,.14);
+  background:linear-gradient(180deg,rgba(8,8,6,.95) 0%,rgba(8,8,6,.85) 100%);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+
+.header-content{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 0;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-decoration:none;
+  transition:color .3s;
+  font-family:'Cormorant Garamond',serif;
+}
+
+.logo:hover{color:var(--amber2)}
+
+.header-links{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+.header-links a{
+  font-size:13px;
+  letter-spacing:.02em;
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+}
+
+.header-links a:hover{color:var(--amber)}
+
+@media(max-width:640px){
+  .header-links{gap:12px;font-size:12px}
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TITLE SECTION
+═══════════════════════════════════════════ */
+.page-title-section{
+  padding:60px 0 48px 0;
+  text-align:center;
+  animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.page-title-section h1{
+  font-size:clamp(32px,8vw,56px);
+  margin-bottom:16px;
+  color:var(--amber2);
+  letter-spacing:.02em;
+}
+
+.page-title-section p{
+  font-size:14px;
+  color:var(--fog);
+  letter-spacing:.01em;
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT SECTIONS
+═══════════════════════════════════════════ */
+.content-wrapper{
+  padding:40px 0;
+}
+
+.info-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:48px;
+  animation:slideIn .8s ease;
+  background:rgba(201,168,76,.03);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:8px;
+  overflow:hidden;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.info-table th,
+.info-table td{
+  padding:16px 24px;
+  text-align:left;
+  border-bottom:1px solid rgba(201,168,76,.1);
+}
+
+.info-table th{
+  background:rgba(201,168,76,.08);
+  color:var(--amber);
+  font-weight:500;
+  letter-spacing:.04em;
+  font-size:13px;
+  width:30%;
+  vertical-align:top;
+}
+
+.info-table td{
+  color:var(--smoke);
+  font-size:15px;
+  line-height:1.8;
+}
+
+.info-table tr:last-child th,
+.info-table tr:last-child td{
+  border-bottom:none;
+}
+
+.info-table a{
+  color:var(--amber);
+  transition:color .3s;
+  text-decoration:underline;
+}
+
+.info-table a:hover{
+  color:var(--amber2);
+}
+
+.content-section{
+  margin-bottom:48px;
+}
+
+.section-title{
+  font-size:24px;
+  color:var(--amber2);
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(201,168,76,.2);
+}
+
+.section-content{
+  line-height:1.8;
+  font-size:15px;
+  color:var(--smoke);
+}
+
+.section-content p{
+  margin-bottom:16px;
+}
+
+.section-content ul{
+  margin:16px 0 16px 24px;
+  list-style:disc;
+}
+
+.section-content li{
+  margin-bottom:10px;
+  line-height:1.8;
+}
+
+.important-box{
+  background:rgba(224,92,92,.08);
+  border-left:3px solid rgba(224,92,92,.4);
+  padding:20px;
+  border-radius:4px;
+  margin:24px 0;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--smoke);
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  border-top:1px solid rgba(201,168,76,.14);
+  padding:48px 0 24px 0;
+  background:rgba(8,8,6,.5);
+  margin-top:80px;
+}
+
+.foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:24px;
+  font-size:12px;
+  color:var(--fog);
+}
+
+.foot-brand{
+  font-size:16px;
+  font-family:'Cormorant Garamond',serif;
+  color:var(--amber);
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+.foot-links{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.foot-links a{
+  color:var(--fog);
+  transition:color .3s;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.foot-links a:hover{
+  color:var(--amber);
+}
+
+@media(max-width:768px){
+  .foot{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:768px){
+  .info-table th,
+  .info-table td{padding:14px 16px;font-size:14px}
+  .info-table th{width:40%}
+  .section-title{font-size:20px}
+}
+
+@media(max-width:640px){
+  .page-title-section{padding:40px 0 32px 0}
+  .info-table th,
+  .info-table td{padding:12px 12px;font-size:13px}
+  .info-table th{width:50%}
+}
+  </style>
+</head>
+<body>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="index-5.html" class="logo serif">AI × チャート</a>
+      <nav class="header-links">
+        <a href="index-5.html#features">Features</a>
+        <a href="index-5.html#pricing">Pricing</a>
+        <a href="terms.html">利用規約</a>
+        <a href="tokushoho.html">特商法</a>
+        <a href="privacy.html">プライバシー</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title-section">
+  <div class="wrap">
+    <h1>特定商取引法に基づく表示</h1>
+    <p>Legal Notice</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div class="wrap">
+
+    <!-- 事業者情報テーブル -->
+    <table class="info-table">
+      <tr>
+        <th>事業者名（販売者）</th>
+        <td>AI×チャート運営事務局</td>
+      </tr>
+      <tr>
+        <th>代表者</th>
+        <td>代表取締役 田中太郎</td>
+      </tr>
+      <tr>
+        <th>所在地</th>
+        <td>東京都渋谷区道玄坂1-0-0 チャートビル 8F</td>
+      </tr>
+      <tr>
+        <th>営業時間</th>
+        <td>平日 10:00～18:00（土日祝日を除く）</td>
+      </tr>
+      <tr>
+        <th>電話番号</th>
+        <td><a href="tel:09012345678">090-1234-5678</a></td>
+      </tr>
+      <tr>
+        <th>メールアドレス</th>
+        <td><a href="mailto:contact@aichart.jp">contact@aichart.jp</a></td>
+      </tr>
+      <tr>
+        <th>ホームページURL</th>
+        <td><a href="https://aichart.jp" target="_blank" rel="noopener">https://aichart.jp</a></td>
+      </tr>
+      <tr>
+        <th>法人設立日</th>
+        <td>2024年1月1日</td>
+      </tr>
+      <tr>
+        <th>資本金</th>
+        <td>5,000万円</td>
+      </tr>
+    </table>
+
+    <!-- 商品の説明 -->
+    <section class="content-section">
+      <h2 class="section-title">販売商品・サービス</h2>
+      <div class="section-content">
+        <p>本サービスは、AI×チャートの提供するオンラインサービス（SaaS）です。以下のプランがあります：</p>
+        <ul>
+          <li><strong>無料プラン：</strong> 月10回まで無料で使用可能</li>
+          <li><strong>Pro プラン：</strong> 月額 ¥980（税込）</li>
+          <li><strong>Enterprise プラン：</strong> 法人向けカスタム対応</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 販売価格 -->
+    <section class="content-section">
+      <h2 class="section-title">販売価格</h2>
+      <div class="section-content">
+        <p>各プランの価格は以下の通りです（税込）：</p>
+        <ul>
+          <li>無料プラン：0円</li>
+          <li>Pro プラン：月額 ¥980</li>
+          <li>Enterprise プラン：お問い合わせください</li>
+        </ul>
+        <div class="important-box">
+          「消費税の計算」：全商品表示価格は消費税を含んだ金額です。消費税増税の際には、本ページ及び実際の決済画面で情報を更新いたします。
+        </div>
+      </div>
+    </section>
+
+    <!-- 販売数量の制限 -->
+    <section class="content-section">
+      <h2 class="section-title">販売数量の制限</h2>
+      <div class="section-content">
+        <p>販売数量に特に制限はありません。ただし、当社の判断により以下の場合は販売をお断りすることがあります：</p>
+        <ul>
+          <li>利用者が本規約に違反している場合</li>
+          <li>不正使用の可能性がある場合</li>
+          <li>システムに過度な負荷を与えるおそれがある場合</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 商品の引き渡し -->
+    <section class="content-section">
+      <h2 class="section-title">商品の引き渡し時期・方法</h2>
+      <div class="section-content">
+        <p><strong>引き渡し方法：</strong> オンラインアクセス（即時配信）</p>
+        <p>ユーザーが登録を完了すると、同時にサービスへのアクセスが可能になります。お支払い確認後、直ちにサービスが利用可能となります。</p>
+      </div>
+    </section>
+
+    <!-- 返品・キャンセル -->
+    <section class="content-section">
+      <h2 class="section-title">返品・交換・キャンセル</h2>
+      <div class="section-content">
+        <p>デジタルサービス（オンラインSaaS）の性質上、返金には応じることができません。ただし、以下の場合はこの限りではありません：</p>
+        <ul>
+          <li>当社の重大な過失によるサービス障害が30日以上継続した場合</li>
+          <li>請求額に誤りがあった場合</li>
+          <li>その他当社が返金を認める理由がある場合</li>
+        </ul>
+        <div class="important-box">
+          返金をご希望の場合は、<a href="mailto:contact@aichart.jp">contact@aichart.jp</a> までご連絡ください。内容確認の上、対応させていただきます。
+        </div>
+      </div>
+    </section>
+
+    <!-- 支払方法・支払時期 -->
+    <section class="content-section">
+      <h2 class="section-title">支払方法・支払時期</h2>
+      <div class="section-content">
+        <p><strong>支払方法：</strong></p>
+        <ul>
+          <li>クレジットカード（Visa、Mastercard、American Express）</li>
+          <li>銀行振込（法人の場合）</li>
+          <li>デジタルウォレット（Apple Pay、Google Pay）</li>
+        </ul>
+        <p><strong>支払時期：</strong> 月額プランは毎月同じ日に自動引き落とし・請求されます。初回は登録時に即座に決済が行われます。</p>
+      </div>
+    </section>
+
+    <!-- 送料・手数料 -->
+    <section class="content-section">
+      <h2 class="section-title">送料・手数料</h2>
+      <div class="section-content">
+        <p>送料は不要です。オンラインサービスのため物理的な配送はございません。</p>
+        <p>クレジットカード決済手数料は当社で負担します。</p>
+      </div>
+    </section>
+
+    <!-- 契約期間 -->
+    <section class="content-section">
+      <h2 class="section-title">契約期間</h2>
+      <div class="section-content">
+        <p>契約期間は以下の通りです：</p>
+        <ul>
+          <li><strong>無料プラン：</strong> 期間制限なし（いつでも利用停止可能）</li>
+          <li><strong>Pro プラン：</strong> 月単位で自動更新（いつでも解約可能）</li>
+        </ul>
+        <p>解約はユーザーマイページから いつでも申し込みが可能です。当月中に解約した場合、翌月からサービスが利用できなくなります。</p>
+      </div>
+    </section>
+
+    <!-- 解約 -->
+    <section class="content-section">
+      <h2 class="section-title">解約・返金ルール</h2>
+      <div class="section-content">
+        <p><strong>解約方法：</strong> ユーザーマイページの「アカウント設定」→「サブスクリプション管理」→「解約」から申し込みが可能です。</p>
+        <p><strong>返金時期：</strong> 解約申し込み後、7営業日以内に返金処理を行います。</p>
+        <p>月額支払いの場合、当月分の日割り返金はしません。次回更新日までのサービスを利用可能です。</p>
+      </div>
+    </section>
+
+    <!-- 個人情報の取扱い -->
+    <section class="content-section">
+      <h2 class="section-title">個人情報の取扱い</h2>
+      <div class="section-content">
+        <p>お客様の個人情報は、<a href="privacy.html">プライバシーポリシー</a>に従い、厳正に保管・管理されます。</p>
+        <p>詳細は <a href="privacy.html">プライバシーポリシーページ</a> をご参照ください。</p>
+      </div>
+    </section>
+
+    <!-- その他 -->
+    <section class="content-section">
+      <h2 class="section-title">その他の注意事項</h2>
+      <div class="section-content">
+        <p><strong>サービス提供の中断・廃止：</strong> 当社は、技術的障害、保守・整備、その他やむを得ない理由により、サービスを一時的に停止または中断することがあります。</p>
+        <p><strong>利用規約：</strong> 本ページに記載のない事項については、<a href="terms.html">利用規約</a>をご参照ください。</p>
+        <p><strong>更新日：</strong> <span id="updateDate">2025年1月</span></p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div class="foot-brand">AI × チャート</div>
+    <div class="foot-links">
+      <a href="index-5.html">Home</a>
+      <a href="terms.html">利用規約</a>
+      <a href="tokushoho.html">特商法</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="mailto:contact@aichart.jp">お問い合わせ</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══ CURSOR ══ */
+const dot=document.getElementById('cursorDot'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function raf(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(raf)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='56px';ring.style.height='56px';ring.style.borderColor='rgba(201,168,76,.7)';dot.style.width='3px';dot.style.height='3px'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(201,168,76,.45)';dot.style.width='6px';dot.style.height='6px'});
+});
+
+/* ══ SMOOTH SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const id=a.getAttribute('href');if(!id||id==='#')return;const el=document.querySelector(id);if(!el)return;e.preventDefault();el.scrollIntoView({behavior:'smooth',block:'start'})});
+});
+
+/* ══ UPDATE DATE ══ */
+document.getElementById('updateDate').textContent=new Date().getFullYear()+'年'+String(new Date().getMonth()+1).padStart(2,'0')+'月';
+</script>
+</body>
+</html>

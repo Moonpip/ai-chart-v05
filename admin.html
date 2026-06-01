@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理者パネル</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --accent: #c8f461;
+      --text: #f0f0f0;
+      --muted: #6b6b75;
+      --error: #ff6b6b;
+      --success: #6bffb8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .btn-sm {
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.4rem 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: none;
+      background: transparent;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-sm:hover { border-color: var(--muted); color: var(--text); }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* タブ */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 0.8rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--error);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.4rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+    }
+
+    .page-title span { color: var(--accent); }
+
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-val {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      z-index: 100;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      pointer-events: none;
+    }
+    .toast.success { background: rgba(107,255,184,0.12); border: 1px solid rgba(107,255,184,0.3); color: var(--success); }
+    .toast.error   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--error); }
+    .toast.show    { transform: translateY(0); opacity: 1; }
+
+    /* TABLE WRAPPER */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      width: 240px;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+
+    .user-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 0.8rem 1.25rem;
+      text-align: left;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    tbody tr {
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+
+    td {
+      padding: 1rem 1.25rem;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    .email-cell {
+      font-weight: 500;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .id-cell { color: var(--muted); font-size: 0.78rem; }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .plan-free       { background: rgba(107,107,117,0.2); color: var(--muted); border: 1px solid #333; }
+    .plan-premium    { background: rgba(200,244,97,0.12); color: var(--accent); border: 1px solid rgba(200,244,97,0.3); }
+    .plan-enterprise { background: rgba(147,112,219,0.12); color: #b39ddb; border: 1px solid rgba(147,112,219,0.3); }
+
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+    .admin-yes { background: rgba(200,244,97,0.1); color: var(--accent); }
+    .admin-no  { color: var(--muted); }
+
+    .actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+    select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus { border-color: var(--accent); }
+
+    .btn-action {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .btn-action:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-delete {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-delete:hover { border-color: var(--error); color: var(--error); }
+
+    .empty-row td {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+    }
+
+    .date-cell { color: var(--muted); font-size: 0.8rem; }
+
+    /* メッセージカード */
+    .message-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .message-card:hover {
+      border-color: var(--accent);
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-info strong {
+      color: var(--text);
+    }
+
+    .user-info .date {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-badge.open {
+      background: rgba(255,107,107,0.1);
+      color: var(--error);
+    }
+
+    .status-badge.closed {
+      background: rgba(107,255,184,0.1);
+      color: var(--success);
+    }
+
+    .message-content {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .message-content p {
+      margin: 0.3rem 0;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .message-content strong {
+      color: var(--accent);
+    }
+
+    .reply-content {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(200,244,97,0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .reply-content p {
+      margin: 0.3rem 0;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .reply-date {
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 0.5rem !important;
+    }
+
+    .reply-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .reply-form textarea {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 100px;
+    }
+
+    .reply-form textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .reply-form button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .reply-form button:hover {
+      background: rgba(200,244,97,0.1);
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .filter-btn.active {
+      background: rgba(200,244,97,0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .no-messages {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+    }
+
+    #loadingRow td {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">AppName <span style="font-size:0.7rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;"> 管理者</span></div>
+    <div class="nav-right">
+      <a href="/dashboard.html" class="nav-link">← ダッシュボード</a>
+      <a href="/logout" class="btn-sm">ログアウト</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- タブ -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('users')">
+        ユーザー<span>管理</span>
+      </button>
+      <button class="tab-btn" id="messagesTab" onclick="showTab('messages')">
+        サポート<span>管理</span>
+        <span class="tab-badge" id="unreadBadge" style="display:none;">0</span>
+      </button>
+    </div>
+
+    <!-- ユーザー管理タブ -->
+    <div id="users-tab" class="tab-content active">
+      <div class="page-header">
+        <div class="page-title">ユーザー<span>管理</span></div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-val" id="statTotal">-</div>
+            <div class="stat-label">総ユーザー</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statPremium">-</div>
+            <div class="stat-label">Premium</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statFree">-</div>
+            <div class="stat-label">Free</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" id="searchInput" placeholder="メールで検索..." oninput="filterUsers()">
+          <span class="user-count" id="userCount"></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>メールアドレス</th>
+              <th>プラン</th>
+              <th>権限</th>
+              <th>登録日</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="userTable">
+            <tr id="loadingRow"><td colspan="6">読み込み中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- サポート管理タブ -->
+    <div id="messages-tab" class="tab-content">
+      <div class="page-header">
+        <div class="page-title">サポート<span>管理</span></div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-val" id="statOpen">-</div>
+            <div class="stat-label">未返信</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statClosed">-</div>
+            <div class="stat-label">返信済み</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val" id="statAll">-</div>
+            <div class="stat-label">合計</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterMessages('open')">
+          未返信
+        </button>
+        <button class="filter-btn" onclick="filterMessages('all')">
+          全て
+        </button>
+        <button class="filter-btn" onclick="filterMessages('closed')">
+          返信済み
+        </button>
+      </div>
+
+      <div id="messagesList"></div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let allUsers = [];
+    let allTickets = [];
+    let myId = null;
+    let currentMessageFilter = 'open';
+
+    // ============ ユーティリティ ============
+    const showToast = (msg, type = 'success') => {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    const formatDate = (str) => {
+      const d = new Date(str);
+      return isNaN(d) ? str : d.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' });
+    };
+
+    const formatDateTime = (str) => {
+      const d = new Date(str);
+      return isNaN(d) ? str : d.toLocaleString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    };
+
+    // ============ タブ切り替え ============
+    const showTab = (tabName) => {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+      event.target.closest('.tab-btn').classList.add('active');
+
+      if (tabName === 'messages') {
+        loadMessages();
+      }
+    };
+
+    // ============ ユーザー管理 ============
+    const renderTable = (users) => {
+      const tbody = document.getElementById('userTable');
+      document.getElementById('userCount').textContent = `${users.length} 件`;
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="6">ユーザーが見つかりません</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map(u => `
+        <tr data-id="${u.id}">
+          <td class="id-cell">#${u.id}</td>
+          <td class="email-cell" title="${u.email}">${u.email}</td>
+          <td>
+            <span class="plan-badge plan-${u.plan}">${u.plan}</span>
+          </td>
+          <td>
+            <span class="admin-badge ${u.isAdmin ? 'admin-yes' : 'admin-no'}">
+              ${u.isAdmin ? '管理者' : '一般'}
+            </span>
+          </td>
+          <td class="date-cell">${formatDate(u.createdAt)}</td>
+          <td>
+            <div class="actions">
+              <select id="plan-${u.id}" onchange="changePlan(${u.id}, this.value)">
+                <option value="free"       ${u.plan === 'free'       ? 'selected' : ''}>Free</option>
+                <option value="premium"    ${u.plan === 'premium'    ? 'selected' : ''}>Premium</option>
+                <option value="enterprise" ${u.plan === 'enterprise' ? 'selected' : ''}>Enterprise</option>
+              </select>
+              ${u.id != myId ? `
+                <button class="btn-action" onclick="toggleAdmin(${u.id})">
+                  ${u.isAdmin ? '権限剥奪' : '管理者化'}
+                </button>
+                <button class="btn-delete" onclick="deleteUser(${u.id}, '${u.email}')">削除</button>
+              ` : '<span style="color:var(--muted);font-size:0.78rem;">（自分）</span>'}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    };
+
+    const filterUsers = () => {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      renderTable(allUsers.filter(u => u.email.toLowerCase().includes(q)));
+    };
+
+    const updateStats = () => {
+      document.getElementById('statTotal').textContent   = allUsers.length;
+      document.getElementById('statPremium').textContent = allUsers.filter(u => u.plan === 'premium').length;
+      document.getElementById('statFree').textContent    = allUsers.filter(u => u.plan === 'free').length;
+    };
+
+    const loadUsers = async () => {
+      try {
+        const r = await fetch('/api/users');
+        if (!r.ok) { location.href = '/dashboard.html'; return; }
+        allUsers = await r.json();
+        updateStats();
+        renderTable(allUsers);
+      } catch {
+        showToast('ユーザー読み込み失敗', 'error');
+      }
+    };
+
+    const changePlan = async (id, plan) => {
+      try {
+        const r = await fetch(`/api/users/${id}/plan`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan })
+        });
+        if (!r.ok) throw new Error();
+        const u = allUsers.find(x => x.id == id);
+        if (u) u.plan = plan;
+        updateStats();
+        showToast(`プランを ${plan} に変更しました`);
+      } catch {
+        showToast('プラン変更に失敗しました', 'error');
+        await loadUsers();
+      }
+    };
+
+    const toggleAdmin = async (id) => {
+      try {
+        const r = await fetch(`/api/users/${id}/admin`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!r.ok) throw new Error();
+        const data = await r.json();
+        const u = allUsers.find(x => x.id == id);
+        if (u) u.isAdmin = data.isAdmin;
+        renderTable(allUsers);
+        showToast(data.isAdmin ? '管理者権限を付与しました' : '管理者権限を剥奪しました');
+      } catch {
+        showToast('権限変更に失敗しました', 'error');
+      }
+    };
+
+    const deleteUser = async (id, email) => {
+      if (!confirm(`「${email}」を削除しますか？この操作は元に戻せません。`)) return;
+      try {
+        const r = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+        if (!r.ok) throw new Error();
+        allUsers = allUsers.filter(u => u.id != id);
+        updateStats();
+        renderTable(allUsers);
+        showToast('ユーザーを削除しました');
+      } catch {
+        showToast('削除に失敗しました', 'error');
+      }
+    };
+
+    // ============ サポート管理 ============
+    const loadMessages = async () => {
+      try {
+        const r = await fetch('/api/admin/support');
+        if (!r.ok) throw new Error();
+        allTickets = await r.json();
+        updateMessageStats();
+        renderMessages(currentMessageFilter);
+      } catch (err) {
+        console.error(err);
+        showToast('サポート読み込み失敗', 'error');
+      }
+    };
+
+    const updateMessageStats = () => {
+      const open = allTickets.filter(t => t.status === 'open').length;
+      const closed = allTickets.filter(t => t.status === 'closed').length;
+      document.getElementById('statOpen').textContent = open;
+      document.getElementById('statClosed').textContent = closed;
+      document.getElementById('statAll').textContent = allTickets.length;
+
+      const badge = document.getElementById('unreadBadge');
+      if (open > 0) {
+        badge.textContent = open;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    };
+
+    const filterMessages = (status) => {
+      currentMessageFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderMessages(status);
+    };
+
+    const renderMessages = (status) => {
+      const list = document.getElementById('messagesList');
+      let tickets = allTickets;
+
+      if (status === 'open') {
+        tickets = allTickets.filter(t => t.status === 'open');
+      } else if (status === 'closed') {
+        tickets = allTickets.filter(t => t.status === 'closed');
+      }
+
+      if (tickets.length === 0) {
+        list.innerHTML = '<div class="no-messages">サポートメッセージはありません</div>';
+        return;
+      }
+
+      list.innerHTML = tickets.map(ticket => `
+        <div class="message-card" data-id="${ticket.id}">
+          <div class="message-header">
+            <div class="user-info">
+              <strong>${ticket.email || '（不明）'}</strong>
+              <span class="date">${formatDateTime(ticket.createdAt)}</span>
+            </div>
+            <span class="status-badge ${ticket.status}">
+              ${ticket.status === 'open' ? '未返信' : '返信済み'}
+            </span>
+          </div>
+
+          <div class="message-content">
+            <p><strong>質問:</strong></p>
+            <p>${ticket.message}</p>
+          </div>
+
+          ${ticket.reply ? `
+            <div class="reply-content">
+              <p><strong>あなたの返信:</strong></p>
+              <p>${ticket.reply}</p>
+              <p class="reply-date">${formatDateTime(ticket.updatedAt)}</p>
+            </div>
+          ` : `
+            <div class="reply-form">
+              <textarea id="reply-${ticket.id}" 
+                        placeholder="返信を入力してください..."
+                        rows="4"></textarea>
+              <button onclick="sendReply(${ticket.id})">返信を送信</button>
+            </div>
+          `}
+        </div>
+      `).join('');
+    };
+
+    const sendReply = async (ticketId) => {
+      const textarea = document.getElementById(`reply-${ticketId}`);
+      const reply = (textarea.value || '').trim();
+
+      if (!reply) {
+        showToast('返信を入力してください', 'error');
+        return;
+      }
+
+      try {
+        const r = await fetch(`/api/admin/support/${ticketId}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reply })
+        });
+
+        if (!r.ok) throw new Error();
+        showToast('返信を送信しました');
+        await loadMessages();
+      } catch (err) {
+        console.error(err);
+        showToast('返信送信に失敗しました', 'error');
+      }
+    };
+
+    // ============ 初期化 ============
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(me => {
+        myId = me.id;
+        return loadUsers();
+      })
+      .catch(() => location.href = '/login.html');
+
+    // 1分ごとにメッセージを更新
+    setInterval(() => {
+      if (document.getElementById('messages-tab').classList.contains('active')) {
+        loadMessages();
+      }
+    }, 60000);
+  </script>
+</body>
+</html>

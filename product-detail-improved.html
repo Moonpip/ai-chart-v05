@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="AI×チャート データセット詳細ページ"/>
+  <title id="pageTitle">データセット詳細 | AI×チャート</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{background:#080806;color:#e8e0cc;font-family:'Noto Sans JP',system-ui,sans-serif}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none}
+
+:root{--amber:#c9a84c;--amber2:#e8cc80;--smoke:rgba(232,224,204,.55);--fog:rgba(232,224,204,.28)}
+
+body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+.wrap{max-width:900px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+header{border-bottom:1px solid rgba(201,168,76,.14);background:rgba(8,8,6,.95);padding:20px 0;position:sticky;top:0;z-index:100}
+
+.header-content{display:flex;align-items:center;justify-content:space-between}
+
+.logo{font-size:20px;font-weight:600;letter-spacing:.04em;font-family:'Cormorant Garamond',serif;color:var(--amber);text-decoration:none}
+
+.back-btn{background:transparent;border:1px solid rgba(201,168,76,.4);color:#e8e0cc;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .3s}
+
+.back-btn:hover{border-color:var(--amber);background:rgba(201,168,76,.1)}
+
+.content{padding:60px 0}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:60px;align-items:start}
+
+.hero-icon{font-size:120px;line-height:1;text-align:center}
+
+.hero-content h1{font-size:42px;color:var(--amber2);margin-bottom:16px;font-family:'Cormorant Garamond',serif}
+
+.hero-desc{font-size:15px;color:var(--smoke);line-height:1.8;margin-bottom:24px}
+
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+
+.spec-box{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:16px;border-radius:8px}
+
+.spec-box-label{font-size:12px;color:var(--fog);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+
+.spec-box-value{font-size:16px;color:var(--amber2);font-weight:500}
+
+.price-card{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:32px;text-align:center}
+
+.price-label{font-size:14px;color:var(--fog);margin-bottom:8px}
+
+.price-value{font-size:48px;color:var(--amber2);margin-bottom:24px;font-family:'JetBrains Mono',monospace}
+
+.btn-group{display:flex;gap:12px;flex-wrap:wrap}
+
+.btn{flex:1;min-width:120px;padding:14px 24px;border:1px solid rgba(201,168,76,.4);border-radius:8px;background:transparent;color:#e8e0cc;font-size:14px;font-weight:500;transition:all .3s}
+
+.btn:hover{border-color:var(--amber);background:rgba(201,168,76,.1)}
+
+.btn-primary{background:var(--amber);color:#080806;border-color:var(--amber)}
+
+.btn-primary:hover{background:var(--amber2);border-color:var(--amber2)}
+
+.details-section{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:32px;margin-bottom:32px}
+
+.details-title{font-size:24px;color:var(--amber2);margin-bottom:20px;font-family:'Cormorant Garamond',serif}
+
+.details-content{font-size:15px;color:var(--smoke);line-height:1.8}
+
+.details-content h3{font-size:18px;color:var(--amber2);margin:24px 0 12px 0;font-family:'Cormorant Garamond',serif}
+
+.details-content ul{margin:16px 0 16px 24px;list-style:disc}
+
+.details-content li{margin-bottom:10px;line-height:1.7}
+
+.details-content p{margin-bottom:16px}
+
+/* GALLERY */
+.gallery-section{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:32px;margin-bottom:32px}
+
+.gallery-title{font-size:24px;color:var(--amber2);margin-bottom:20px;font-family:'Cormorant Garamond',serif}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-bottom:20px}
+
+.gallery-item{position:relative;overflow:hidden;border-radius:8px;border:1px solid rgba(201,168,76,.2);aspect-ratio:1;cursor:pointer;transition:all .3s}
+
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+
+.gallery-item:hover{border-color:var(--amber);transform:scale(1.02)}
+
+.gallery-item-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);color:#e8e0cc;padding:8px 12px;font-size:12px}
+
+/* DOWNLOAD */
+.download-section{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:32px;margin-bottom:32px}
+
+.download-title{font-size:24px;color:var(--amber2);margin-bottom:20px;font-family:'Cormorant Garamond',serif}
+
+.download-list{display:grid;gap:12px}
+
+.download-item{display:flex;align-items:center;gap:12px;padding:16px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:8px;transition:all .3s}
+
+.download-item:hover{border-color:var(--amber);background:rgba(201,168,76,.12)}
+
+.download-icon{font-size:24px}
+
+.download-info{flex:1}
+
+.download-name{font-size:14px;color:var(--amber2);font-weight:500;margin-bottom:4px}
+
+.download-size{font-size:12px;color:var(--fog)}
+
+.download-btn{background:var(--amber);color:#080806;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:500;white-space:nowrap;transition:all .3s}
+
+.download-btn:hover{background:var(--amber2)}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px}
+
+.modal.active{display:flex}
+
+.modal-content{position:relative;max-width:90vw;max-height:90vh}
+
+.modal-img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px}
+
+.modal-close{position:absolute;top:-40px;right:0;width:40px;height:40px;background:transparent;color:#e8e0cc;font-size:32px;cursor:pointer;transition:color .3s}
+
+.modal-close:hover{color:var(--amber)}
+
+footer{border-top:1px solid rgba(201,168,76,.14);padding:48px 0 24px 0;background:rgba(8,8,6,.5);margin-top:60px;text-align:center;font-size:12px;color:var(--fog)}
+
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr}
+  .hero-content h1{font-size:32px}
+  .btn-group{flex-direction:column}
+  .btn{width:100%}
+}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <a href="data-sales-fixed.html" class="logo">AI × チャート</a>
+      <button class="back-btn" onclick="goBack()">← 戻る</button>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="wrap">
+  <div class="content">
+    
+    <!-- HERO SECTION -->
+    <div class="hero">
+      <div class="hero-icon" id="heroIcon"></div>
+      
+      <div class="hero-content">
+        <h1 id="productTitle"></h1>
+        <p class="hero-desc" id="productDesc"></p>
+        
+        <div class="spec-grid" id="specGrid"></div>
+        
+        <div class="price-card">
+          <div class="price-label">販売価格</div>
+          <div class="price-value" id="productPrice"></div>
+          <div class="btn-group">
+            <button class="btn" onclick="addToCart()">🛒 カートに追加</button>
+            <button class="btn btn-primary" onclick="goCheckout()">💳 購入ページへ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- DETAILS SECTIONS -->
+    <div id="detailsSections"></div>
+    
+    <!-- GALLERY SECTION -->
+    <div class="gallery-section" id="gallerySection" style="display:none;">
+      <h2 class="gallery-title">📸 ギャラリー</h2>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+    
+    <!-- DOWNLOAD SECTION -->
+    <div class="download-section" id="downloadSection" style="display:none;">
+      <h2 class="download-title">📥 ダウンロード可能なファイル</h2>
+      <div class="download-list" id="downloadList"></div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- IMAGE MODAL -->
+<div class="modal" id="imageModal">
+  <button class="modal-close" onclick="closeModal()">✕</button>
+  <div class="modal-content">
+    <img id="modalImg" class="modal-img" src="" alt="">
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; AI×チャート. All rights reserved.</p>
+</footer>
+
+<script>
+/* GET PRODUCT FROM LOCALSTORAGE OR DEFAULT */
+function getProductsData() {
+  const stored = localStorage.getItem('productsData');
+  return stored ? JSON.parse(stored) : getDefaultProducts();
+}
+
+function getDefaultProducts() {
+  return [
+    {
+      id: 1,
+      title: "日本全株価データセット",
+      icon: "📊",
+      description: "6000銘柄の40年分の日本株価データを完全網羅。金融分析・バックテスト・学習用として最適。",
+      price: "¥9,800",
+      specs: { "銘柄数": "6,000+", "期間": "40年", "形式": "CSV/Excel" },
+      fullDescription: `<p>日本全域の6,000銘柄以上の40年分の株価データを完全網羅したデータセットです。</p>`,
+      gallery: ["images/data-01-preview.png", "images/data-01-chart.png"],
+      files: [
+        { name: "data_jp_stocks_40years.csv", size: "245 MB", type: "📄" },
+        { name: "data_jp_stocks_40years.xlsx", size: "180 MB", type: "📊" }
+      ]
+    },
+    {
+      id: 2,
+      title: "テクニカル指標付きデータセット",
+      icon: "📈",
+      description: "2000銘柄のテクニカル指標（MA、MACD、RSI等）が計算済み。即座に分析を開始できます。",
+      price: "¥14,800",
+      specs: { "銘柄数": "2,000+", "指標数": "15+", "形式": "JSON/CSV" },
+      fullDescription: `<p>2,000銘柄のテクニカル指標が計算済みです。</p>`,
+      gallery: ["images/data-02-preview.png"],
+      files: [
+        { name: "technical_indicators_2000stocks.json", size: "580 MB", type: "📄" },
+        { name: "technical_indicators_2000stocks.csv", size: "420 MB", type: "📊" }
+      ]
+    },
+    {
+      id: 3,
+      title: "セクター別分類データ",
+      icon: "🔥",
+      description: "33業種別に分類された日本株データ。セクターローテーション分析に最適。",
+      price: "¥11,800",
+      specs: { "業種数": "33", "期間": "30年", "形式": "SQL/CSV" },
+      fullDescription: `<p>33業種別に分類されたデータです。</p>`,
+      gallery: [],
+      files: [
+        { name: "sector_data_33industries.sql", size: "320 MB", type: "🗄️" },
+        { name: "sector_data_33industries.csv", size: "240 MB", type: "📊" }
+      ]
+    },
+    {
+      id: 4,
+      title: "トレード分析用カスタムデータ",
+      icon: "⚡",
+      description: "プロ仕様の1分足データ、買上下分離、出来高分析。デイトレード・スイングトレード向け。",
+      price: "¥19,800",
+      specs: { "銘柄数": "1,500+", "粒度": "1分足対応", "形式": "HDF5/Parquet" },
+      fullDescription: `<p>1分足チャートとプロ仕様データです。</p>`,
+      gallery: [],
+      files: [
+        { name: "pro_trade_analysis_1min.hdf5", size: "1.2 GB", type: "📦" },
+        { name: "pro_trade_analysis_1min.parquet", size: "980 MB", type: "📦" }
+      ]
+    },
+    {
+      id: 5,
+      title: "機械学習用データセット",
+      icon: "🤖",
+      description: "正規化・特徴抽出済みのML用データ。100種類以上の特徴量で即座にモデル学習可能。",
+      price: "¥24,800",
+      specs: { "サンプル": "1M+", "特徴": "100+", "形式": "NumPy/TensorFlow" },
+      fullDescription: `<p>機械学習用に正規化されたデータです。</p>`,
+      gallery: [],
+      files: [
+        { name: "ml_dataset_1m_samples.npy", size: "750 MB", type: "📦" },
+        { name: "ml_dataset_1m_samples.h5", size: "680 MB", type: "📦" }
+      ]
+    },
+    {
+      id: 6,
+      title: "全データ統合パッケージ",
+      icon: "💎",
+      description: "全5つのデータセットを完全網羅。企業・研究機関向けの究極パッケージ。",
+      price: "¥49,800",
+      specs: { "内容": "全5種類", "更新": "毎日", "サポート": "含む" },
+      fullDescription: `<p>全データセットを含む究極パッケージです。</p>`,
+      gallery: [],
+      files: [
+        { name: "complete_package_all_datasets.zip", size: "3.5 GB", type: "📦" },
+        { name: "complete_package_readme.txt", size: "2 MB", type: "📄" }
+      ]
+    }
+  ];
+}
+
+/* GET PRODUCT ID FROM URL */
+function getProductId() {
+  const params = new URLSearchParams(window.location.search);
+  return parseInt(params.get('id')) || 1;
+}
+
+/* RENDER PAGE */
+function renderPage() {
+  const productId = getProductId();
+  const products = getProductsData();
+  const product = products.find(p => p.id === productId);
+  
+  if (!product) {
+    document.querySelector('.content').innerHTML = '<p style="color:var(--fog);text-align:center;padding:40px;">商品が見つかりません</p>';
+    return;
+  }
+  
+  // BASIC INFO
+  document.getElementById('pageTitle').textContent = product.title + ' | AI×チャート';
+  document.getElementById('heroIcon').textContent = product.icon;
+  document.getElementById('productTitle').textContent = product.title;
+  document.getElementById('productDesc').textContent = product.description;
+  document.getElementById('productPrice').textContent = product.price;
+  
+  // SPECS
+  const specGrid = document.getElementById('specGrid');
+  specGrid.innerHTML = Object.entries(product.specs).map(([key, value]) => `
+    <div class="spec-box">
+      <div class="spec-box-label">${key}</div>
+      <div class="spec-box-value">${value}</div>
+    </div>
+  `).join('');
+  
+  // DETAILS
+  if (product.fullDescription) {
+    const detailsSection = document.createElement('div');
+    detailsSection.className = 'details-section';
+    detailsSection.innerHTML = `
+      <h2 class="details-title">📝 詳細説明</h2>
+      <div class="details-content">${product.fullDescription}</div>
+    `;
+    document.getElementById('detailsSections').appendChild(detailsSection);
+  }
+  
+  // GALLERY
+  if (product.gallery && product.gallery.length > 0) {
+    document.getElementById('gallerySection').style.display = 'block';
+    const galleryGrid = document.getElementById('galleryGrid');
+    galleryGrid.innerHTML = product.gallery.map((img, idx) => `
+      <div class="gallery-item" onclick="openModal('${img}')">
+        <img src="${img}" alt="Gallery ${idx + 1}">
+        <div class="gallery-item-label">画像 ${idx + 1}</div>
+      </div>
+    `).join('');
+  }
+  
+  // DOWNLOAD FILES
+  if (product.files && product.files.length > 0) {
+    document.getElementById('downloadSection').style.display = 'block';
+    const downloadList = document.getElementById('downloadList');
+    downloadList.innerHTML = product.files.map(file => `
+      <div class="download-item">
+        <div class="download-icon">${file.type}</div>
+        <div class="download-info">
+          <div class="download-name">${file.name}</div>
+          <div class="download-size">ファイルサイズ: ${file.size}</div>
+        </div>
+        <button class="download-btn" onclick="downloadFile('${file.name}')">⬇️ ダウンロード</button>
+      </div>
+    `).join('');
+  }
+}
+
+/* FUNCTIONS */
+function goBack() {
+  window.history.back();
+}
+
+function addToCart() {
+  const productId = getProductId();
+  const products = getProductsData();
+  const product = products.find(p => p.id === productId);
+  alert(`「${product.title}」をカートに追加しました。`);
+}
+
+function goCheckout() {
+  const productId = getProductId();
+  window.location.href = `checkout.html?product=${productId}`;
+}
+
+function openModal(imgSrc) {
+  document.getElementById('modalImg').src = imgSrc;
+  document.getElementById('imageModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('imageModal').classList.remove('active');
+}
+
+function downloadFile(filename) {
+  // In a real implementation, this would trigger a server-side download
+  // For now, we'll show a message
+  alert(`ファイルをダウンロード中...\n\n${filename}\n\n※実装時は実際のダウンロードが開始されます`);
+}
+
+/* INIT */
+renderPage();
+</script>
+</body>
+</html>

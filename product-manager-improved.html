@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="データセット販売管理画面"/>
+  <title>商品管理 | AI×チャート Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#080806;color:#e8e0cc;font-family:'Noto Sans JP',system-ui,sans-serif}
+a,button{text-decoration:none;border:none;font-family:inherit}
+
+:root{--amber:#c9a84c;--amber2:#e8cc80;--smoke:rgba(232,224,204,.55);--fog:rgba(232,224,204,.28)}
+
+header{background:rgba(22,20,16,.6);border-bottom:1px solid rgba(201,168,76,.1);padding:20px 0;position:sticky;top:0;z-index:100}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+.header-content{display:flex;align-items:center;justify-content:space-between}
+
+.logo{font-size:20px;font-weight:600;letter-spacing:.04em;font-family:'Cormorant Garamond',serif;color:var(--amber)}
+
+.header-right{display:flex;gap:16px;align-items:center}
+
+.user-info{font-size:12px;color:var(--fog)}
+
+.logout-btn{background:transparent;border:1px solid rgba(201,168,76,.4);color:#e8e0cc;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .3s}
+
+.logout-btn:hover{border-color:var(--amber);background:rgba(201,168,76,.1)}
+
+.main{padding:40px 0}
+
+.page-title{font-size:32px;color:var(--amber2);margin-bottom:8px;font-family:'Cormorant Garamond',serif}
+
+.page-desc{font-size:13px;color:var(--fog);margin-bottom:40px}
+
+.tabs{display:flex;gap:8px;margin-bottom:32px;border-bottom:1px solid rgba(201,168,76,.1)}
+
+.tab-btn{background:transparent;color:var(--fog);padding:12px 20px;border-bottom:2px solid transparent;cursor:pointer;font-size:14px;transition:all .3s}
+
+.tab-btn:hover{color:var(--amber)}
+
+.tab-btn.active{color:var(--amber2);border-bottom-color:var(--amber)}
+
+.editor-container{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px}
+
+.editor-section{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:24px}
+
+.editor-title{font-size:16px;color:var(--amber2);margin-bottom:20px;font-family:'Cormorant Garamond',serif}
+
+.form-group{margin-bottom:16px;display:flex;flex-direction:column}
+
+.form-group label{font-size:12px;color:var(--amber);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+
+.form-group input,
+.form-group textarea{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:10px 12px;color:#e8e0cc;font-size:13px;font-family:inherit;transition:all .3s}
+
+.form-group input:focus,
+.form-group textarea:focus{outline:none;border-color:var(--amber);background:rgba(201,168,76,.08)}
+
+.form-group textarea{min-height:100px;resize:vertical}
+
+/* GALLERY EDITOR */
+.gallery-editor{margin:20px 0}
+
+.gallery-input{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}
+
+.gallery-input input{font-size:12px !important;padding:8px 10px !important}
+
+.gallery-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+
+.gallery-preview-item{aspect-ratio:1;border:1px solid rgba(201,168,76,.2);border-radius:6px;overflow:hidden;position:relative;background:rgba(201,168,76,.05)}
+
+.gallery-preview-item img{width:100%;height:100%;object-fit:cover}
+
+.gallery-preview-item .remove-btn{position:absolute;top:2px;right:2px;background:rgba(224,92,92,.6);color:#e8e0cc;width:24px;height:24px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+/* FILES EDITOR */
+.file-editor{margin:20px 0}
+
+.file-input{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end}
+
+.file-input input{font-size:12px !important;padding:8px 10px !important}
+
+.file-list{display:grid;gap:8px;margin-bottom:12px}
+
+.file-item{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:12px;border-radius:6px;display:flex;align-items:center;justify-content:space-between}
+
+.file-item-info{flex:1;font-size:12px}
+
+.file-item-name{color:var(--amber2);font-weight:500;margin-bottom:2px}
+
+.file-item-size{color:var(--fog);font-size:11px}
+
+.remove-file-btn{background:rgba(224,92,92,.2);border:1px solid rgba(224,92,92,.4);color:#e8e0cc;padding:6px 12px;border-radius:4px;font-size:11px;cursor:pointer;transition:all .3s}
+
+.remove-file-btn:hover{background:rgba(224,92,92,.3)}
+
+.add-btn{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--amber);padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .3s;margin-top:8px}
+
+.add-btn:hover{border-color:var(--amber);background:rgba(201,168,76,.1)}
+
+.button-group{display:flex;gap:12px;margin-top:20px}
+
+.btn{padding:12px 32px;border-radius:8px;font-size:14px;cursor:pointer;transition:all .3s;font-weight:500}
+
+.btn-primary{background:var(--amber);color:#080806;border:none}
+
+.btn-primary:hover{background:var(--amber2);transform:scale(1.02)}
+
+.btn-secondary{background:transparent;border:1px solid rgba(201,168,76,.4);color:#e8e0cc}
+
+.btn-secondary:hover{border-color:var(--amber);background:rgba(201,168,76,.1)}
+
+.preview-box{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:24px;margin-bottom:24px}
+
+.preview-title{font-size:14px;color:var(--amber);margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em}
+
+.preview-content{background:rgba(22,20,16,.6);border-radius:8px;padding:16px;font-size:13px;color:var(--smoke);line-height:1.6;max-height:300px;overflow-y:auto}
+
+.message{padding:12px 16px;border-radius:6px;margin-bottom:16px;font-size:13px;display:none}
+
+.message.show{display:block}
+
+.message.success{background:rgba(76,187,138,.2);color:#4cbb8a;border:1px solid rgba(76,187,138,.4)}
+
+.product-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+
+.product-item{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s}
+
+.product-item:hover{border-color:var(--amber);background:rgba(201,168,76,.08)}
+
+.product-item-label{font-size:11px;color:var(--amber);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
+
+.product-item-title{font-size:14px;color:var(--amber2);margin-bottom:4px;font-weight:500}
+
+.product-item-price{font-size:13px;color:var(--fog)}
+
+@media(max-width:968px){
+  .editor-container{grid-template-columns:1fr}
+}
+
+@media(max-width:640px){
+  .file-input{grid-template-columns:1fr}
+  .gallery-preview{grid-template-columns:repeat(2,1fr)}
+}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="header-content">
+      <div class="logo">AI × チャート Admin</div>
+      <div class="header-right">
+        <div class="user-info">管理者: Admin</div>
+        <button class="logout-btn" onclick="goBack()">← ダッシュボードに戻る</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="wrap">
+  <div class="main">
+    <h1 class="page-title">データセット商品管理</h1>
+    <p class="page-desc">商品情報を編集・管理します。変更後は「保存」ボタンで反映されます。</p>
+    
+    <!-- MESSAGE -->
+    <div class="message" id="message"></div>
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchView('products')">📋 商品一覧</button>
+      <button class="tab-btn" onclick="switchView('editor')">✏️ 商品編集</button>
+    </div>
+    
+    <!-- VIEW: PRODUCTS LIST -->
+    <div id="products-view" style="display:block;">
+      <div class="product-list" id="productList"></div>
+    </div>
+    
+    <!-- VIEW: EDITOR -->
+    <div id="editor-view" style="display:none;">
+      <div class="editor-container">
+        
+        <!-- LEFT: BASIC INFO -->
+        <div>
+          <div class="editor-section">
+            <div class="editor-title">基本情報</div>
+            
+            <div class="form-group">
+              <label>Product ID</label>
+              <input type="text" id="productId" readonly style="background:rgba(201,168,76,.03);cursor:not-allowed;">
+            </div>
+            
+            <div class="form-group">
+              <label>商品名</label>
+              <input type="text" id="productTitle" placeholder="商品の名前">
+            </div>
+            
+            <div class="form-group">
+              <label>短い説明</label>
+              <textarea id="productDesc" placeholder="商品の短い説明"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>価格</label>
+              <input type="text" id="productPrice" placeholder="¥9,800">
+            </div>
+            
+            <div class="form-group">
+              <label>アイコン（絵文字）</label>
+              <input type="text" id="productIcon" placeholder="📊" maxlength="2">
+            </div>
+            
+            <div class="editor-section" style="margin-top:20px;">
+              <div class="editor-title">スペック (仕様)</div>
+              <div id="specsEditor"></div>
+              <button class="add-btn" onclick="addSpec()">+ スペック追加</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- RIGHT: DETAILS & MEDIA -->
+        <div>
+          <div class="editor-section">
+            <div class="editor-title">詳しい説明</div>
+            <div class="form-group">
+              <label>詳しい説明（HTML対応）</label>
+              <textarea id="productFullDesc" placeholder="詳しい説明を入力" style="min-height:200px;"></textarea>
+            </div>
+          </div>
+          
+          <div class="editor-section">
+            <div class="editor-title">📸 ギャラリー画像</div>
+            <div class="gallery-editor">
+              <div class="gallery-input">
+                <input type="text" id="galleryInput" placeholder="画像URL (例: images/data-01.png)">
+                <button class="add-btn" onclick="addGalleryImage()">追加</button>
+              </div>
+              <div class="gallery-preview" id="galleryPreview"></div>
+            </div>
+          </div>
+          
+          <div class="editor-section">
+            <div class="editor-title">📥 ダウンロードファイル</div>
+            <div class="file-editor">
+              <div class="file-input">
+                <input type="text" id="fileName" placeholder="ファイル名">
+                <input type="text" id="fileSize" placeholder="サイズ (例: 245 MB)">
+                <input type="text" id="fileType" placeholder="アイコン (例: 📄)">
+                <button class="add-btn" onclick="addFile()">追加</button>
+              </div>
+              <div class="file-list" id="fileList"></div>
+            </div>
+          </div>
+          
+          <div class="preview-box">
+            <div class="preview-title">プレビュー</div>
+            <div class="preview-content" id="preview"></div>
+          </div>
+          
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="saveProduct()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="resetForm()">🔄 リセット</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* PRODUCTS DATA */
+let productsData = JSON.parse(localStorage.getItem('productsData')) || [
+  {
+    id: 1,
+    title: "日本全株価データセット",
+    icon: "📊",
+    description: "6000銘柄の40年分の日本株価データ。OHLCV形式。",
+    price: "¥9,800",
+    specs: { "銘柄数": "6,000+", "期間": "40年", "形式": "CSV/Excel" },
+    fullDescription: `<h3>📊 含まれるデータ</h3><ul><li>始値（Open）</li><li>高値（High）</li><li>安値（Low）</li><li>終値（Close）</li><li>出来高（Volume）</li></ul>`,
+    gallery: ["images/data-01-preview.png"],
+    files: [
+      { name: "data_jp_stocks.csv", size: "245 MB", type: "📄" },
+      { name: "data_jp_stocks.xlsx", size: "180 MB", type: "📊" }
+    ]
+  },
+  {
+    id: 2,
+    title: "テクニカル指標付きデータセット",
+    icon: "📈",
+    description: "2000銘柄のテクニカル指標が計算済み。",
+    price: "¥14,800",
+    specs: { "銘柄数": "2,000+", "指標数": "15+", "形式": "JSON/CSV" },
+    fullDescription: `<h3>📊 含まれる指標</h3><ul><li>移動平均線</li><li>MACD</li><li>RSI</li></ul>`,
+    gallery: [],
+    files: []
+  },
+  {
+    id: 3,
+    title: "セクター別分類データ",
+    icon: "🔥",
+    description: "33業種別に分類された日本株データ。",
+    price: "¥11,800",
+    specs: { "業種数": "33", "期間": "30年", "形式": "SQL/CSV" },
+    fullDescription: `<h3>🏭 対応セクター</h3><p>金融、自動車、電気など33業種に対応。</p>`,
+    gallery: [],
+    files: []
+  },
+  {
+    id: 4,
+    title: "トレード分析用カスタムデータ",
+    icon: "⚡",
+    description: "1分足データ、買上下分離など。",
+    price: "¥19,800",
+    specs: { "銘柄数": "1,500+", "粒度": "1分足対応", "形式": "HDF5/Parquet" },
+    fullDescription: `<h3>⚙️ 高度なデータ</h3><ul><li>1分足チャート</li><li>大口注文検出</li></ul>`,
+    gallery: [],
+    files: []
+  },
+  {
+    id: 5,
+    title: "機械学習用データセット",
+    icon: "🤖",
+    description: "100種類以上の特徴量が抽出済み。",
+    price: "¥24,800",
+    specs: { "サンプル": "1M+", "特徴": "100+", "形式": "NumPy/TensorFlow" },
+    fullDescription: `<h3>🧠 含まれる特徴量</h3><ul><li>価格系特徴</li><li>出来高系特徴</li><li>テクニカル特徴</li></ul>`,
+    gallery: [],
+    files: []
+  },
+  {
+    id: 6,
+    title: "全データ統合パッケージ",
+    icon: "💎",
+    description: "全5つのデータセットを網羅。",
+    price: "¥49,800",
+    specs: { "内容": "全5種類", "更新": "毎日", "サポート": "含む" },
+    fullDescription: `<h3>📦 パッケージ内容</h3><p>すべてのデータセットが含まれます。</p>`,
+    gallery: [],
+    files: []
+  }
+];
+
+let currentProductId = null;
+let currentGallery = [];
+let currentFiles = [];
+
+/* RENDER PRODUCTS LIST */
+function renderProductList() {
+  const list = document.getElementById('productList');
+  list.innerHTML = productsData.map(p => `
+    <div class="product-item" onclick="editProduct(${p.id})">
+      <div class="product-item-label">ID: ${p.id}</div>
+      <div class="product-item-title">${p.title}</div>
+      <div class="product-item-price">${p.price}</div>
+    </div>
+  `).join('');
+}
+
+/* SWITCH VIEW */
+function switchView(view) {
+  document.getElementById('products-view').style.display = view === 'products' ? 'block' : 'none';
+  document.getElementById('editor-view').style.display = view === 'editor' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* EDIT PRODUCT */
+function editProduct(id) {
+  const product = productsData.find(p => p.id === id);
+  if (!product) return;
+  
+  currentProductId = id;
+  currentGallery = [...(product.gallery || [])];
+  currentFiles = [...(product.files || [])];
+  
+  document.getElementById('productId').value = `ID: ${product.id}`;
+  document.getElementById('productTitle').value = product.title;
+  document.getElementById('productDesc').value = product.description;
+  document.getElementById('productPrice').value = product.price;
+  document.getElementById('productIcon').value = product.icon;
+  document.getElementById('productFullDesc').value = product.fullDescription;
+  
+  renderSpecsEditor(product.specs);
+  renderGalleryPreview();
+  renderFileList();
+  updatePreview();
+  
+  switchView('editor');
+}
+
+/* SPECS */
+function renderSpecsEditor(specs) {
+  const editor = document.getElementById('specsEditor');
+  editor.innerHTML = Object.entries(specs).map(([key, value], idx) => `
+    <div class="form-group" style="grid-template-columns:1fr 1fr;display:grid;gap:8px;">
+      <input type="text" value="${key}" placeholder="ラベル" onchange="updatePreview()" style="padding:8px 10px;font-size:12px;">
+      <input type="text" value="${value}" placeholder="値" onchange="updatePreview()" style="padding:8px 10px;font-size:12px;">
+    </div>
+  `).join('');
+}
+
+function addSpec() {
+  const editor = document.getElementById('specsEditor');
+  const div = document.createElement('div');
+  div.className = 'form-group';
+  div.style.cssText = 'grid-template-columns:1fr 1fr;display:grid;gap:8px;';
+  div.innerHTML = `
+    <input type="text" placeholder="ラベル" onchange="updatePreview()" style="padding:8px 10px;font-size:12px;">
+    <input type="text" placeholder="値" onchange="updatePreview()" style="padding:8px 10px;font-size:12px;">
+  `;
+  editor.appendChild(div);
+  updatePreview();
+}
+
+/* GALLERY */
+function addGalleryImage() {
+  const input = document.getElementById('galleryInput');
+  if (input.value.trim()) {
+    currentGallery.push(input.value.trim());
+    input.value = '';
+    renderGalleryPreview();
+    updatePreview();
+  }
+}
+
+function renderGalleryPreview() {
+  const preview = document.getElementById('galleryPreview');
+  preview.innerHTML = currentGallery.map((img, idx) => `
+    <div class="gallery-preview-item">
+      <img src="${img}" alt="Gallery" onerror="this.style.display='none'">
+      <div class="remove-btn" onclick="removeGalleryImage(${idx})">✕</div>
+    </div>
+  `).join('');
+}
+
+function removeGalleryImage(idx) {
+  currentGallery.splice(idx, 1);
+  renderGalleryPreview();
+  updatePreview();
+}
+
+/* FILES */
+function addFile() {
+  const name = document.getElementById('fileName').value.trim();
+  const size = document.getElementById('fileSize').value.trim();
+  const type = document.getElementById('fileType').value.trim();
+  
+  if (name && size && type) {
+    currentFiles.push({ name, size, type });
+    document.getElementById('fileName').value = '';
+    document.getElementById('fileSize').value = '';
+    document.getElementById('fileType').value = '';
+    renderFileList();
+    updatePreview();
+  }
+}
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = currentFiles.map((file, idx) => `
+    <div class="file-item">
+      <div class="file-item-info">
+        <div class="file-item-name">${file.type} ${file.name}</div>
+        <div class="file-item-size">${file.size}</div>
+      </div>
+      <button class="remove-file-btn" onclick="removeFile(${idx})">削除</button>
+    </div>
+  `).join('');
+}
+
+function removeFile(idx) {
+  currentFiles.splice(idx, 1);
+  renderFileList();
+  updatePreview();
+}
+
+/* PREVIEW */
+function updatePreview() {
+  const title = document.getElementById('productTitle').value;
+  const price = document.getElementById('productPrice').value;
+  const specsInputs = document.querySelectorAll('#specsEditor input');
+  
+  let specsHtml = '';
+  for (let i = 0; i < specsInputs.length; i += 2) {
+    const key = specsInputs[i].value;
+    const val = specsInputs[i + 1].value;
+    if (key && val) specsHtml += `<div><strong>${key}:</strong> ${val}</div>`;
+  }
+  
+  const preview = `
+    <h3>${title}</h3>
+    <p style="margin-top:10px;"><strong>${price}</strong></p>
+    <div style="margin-top:10px;">${specsHtml}</div>
+    <p style="margin-top:10px;font-size:11px;color:var(--fog);">
+      📸 画像: ${currentGallery.length}枚<br>
+      📥 ファイル: ${currentFiles.length}個
+    </p>
+  `;
+  
+  document.getElementById('preview').innerHTML = preview;
+}
+
+/* SAVE */
+function saveProduct() {
+  if (!currentProductId) return;
+  
+  const product = productsData.find(p => p.id === currentProductId);
+  const specsInputs = document.querySelectorAll('#specsEditor input');
+  
+  const specs = {};
+  for (let i = 0; i < specsInputs.length; i += 2) {
+    const key = specsInputs[i].value;
+    const val = specsInputs[i + 1].value;
+    if (key && val) specs[key] = val;
+  }
+  
+  product.title = document.getElementById('productTitle').value;
+  product.description = document.getElementById('productDesc').value;
+  product.price = document.getElementById('productPrice').value;
+  product.icon = document.getElementById('productIcon').value;
+  product.specs = specs;
+  product.fullDescription = document.getElementById('productFullDesc').value;
+  product.gallery = currentGallery;
+  product.files = currentFiles;
+  
+  localStorage.setItem('productsData', JSON.stringify(productsData));
+  
+  showMessage(`✓ 商品 ID ${currentProductId} を保存しました！`, 'success');
+  renderProductList();
+}
+
+function resetForm() {
+  if (currentProductId) {
+    editProduct(currentProductId);
+    showMessage('フォームをリセットしました', 'success');
+  }
+}
+
+/* MESSAGE */
+function showMessage(text, type) {
+  const msg = document.getElementById('message');
+  msg.textContent = text;
+  msg.className = `message show ${type}`;
+  setTimeout(() => msg.classList.remove('show'), 3000);
+}
+
+/* NAVIGATION */
+function goBack() {
+  window.location.href = 'admin-dashboard.html';
+}
+
+/* INIT */
+renderProductList();
+</script>
+</body>
+</html>
